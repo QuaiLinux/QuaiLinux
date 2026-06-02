@@ -1,0 +1,27 @@
+.DS_Store
+
+# Generated ISO artifacts and downloads
+dist/
+downloads/
+*.iso
+*.img
+*.hybrid.iso
+
+# live-build generated state/caches
+quailinux/live/.build/
+quailinux/live/binary/
+quailinux/live/cache/
+quailinux/live/chroot/
+quailinux/live/config/bootstrap
+quailinux/live/config/binary
+quailinux/live/config/build
+quailinux/live/config/chroot
+quailinux/live/config/common
+quailinux/live/config/source
+quailinux/live/locales
+
+# Local upstream source checkouts used while experimenting
+debian-cd/
+debian-installer/
+live-build/
+live-boot/

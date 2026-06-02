@@ -1,0 +1,29 @@
+QuaiLinux Attribution Fork License
+
+Copyright (c) 2026 Mateo Cogeanu and the QuaiLinux project.
+
+Mateo Cogeanu owns the QuaiLinux name, branding, artwork, and original project
+files in this repository, except where a file clearly comes from Debian or
+another third-party project.
+
+Permission is granted to any person to fork, copy, modify, build, publish, and
+redistribute this repository and derivative works, provided that:
+
+1. Credit is given to Mateo Cogeanu and QuaiLinux in a reasonable place, such as
+   a README, credits page, repository description, or release notes.
+2. The QuaiLinux name and branding are not used to mislead people into thinking
+   an unofficial fork is the original QuaiLinux project.
+3. This license notice remains included with copies or substantial derivatives
+   of the original QuaiLinux project files.
+
+This permission applies only to original QuaiLinux project files in this
+repository. Debian, Calamares, KDE Plasma, live-build, live-boot, and all other
+third-party software remain under their own licenses.
+
+THE SOFTWARE AND PROJECT FILES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES,
+OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
+ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.

@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+cd "$(dirname "$0")/../../.."
+
+if [ -f config/bootloaders/splash.png ] && [ -d binary/boot/grub ]; then
+    cp config/bootloaders/splash.png binary/boot/grub/splash.png
+fi
+
+for cfg in binary/boot/grub/*.cfg binary/boot/grub/*/*.cfg
+do
+    [ -f "$cfg" ] || continue
+    sed -i \
+        -e 's/Live system (arm64)/Start QuaiLinux Live/g' \
+        -e 's/Live system (arm64 fail-safe mode)/Start QuaiLinux Live (safe graphics)/g' \
+        -e 's/Advanced install options \.\.\./Advanced QuaiLinux install options .../g' \
+        -e 's/Graphical installer \.\.\./Graphical installer/g' \
+        -e 's/Text installer \.\.\./Text installer/g' \
+        -e 's/Graphical installer with dark theme \.\.\./Graphical installer (dark theme)/g' \
+        -e 's/Text installer with dark theme \.\.\./Text installer (dark theme)/g' \
+        -e 's/Installer with speech synthesis \.\.\./Installer with speech synthesis/g' \
+        -e 's/Utilities\.\.\./Utilities/g' \
+        -e 's/Verify integrity of the boot medium/Verify QuaiLinux boot media/g' \
+        -e 's/Debian GNU\/Linux Live/QuaiLinux Live/g' \
+        -e 's/Debian Live/QuaiLinux Live/g' \
+        "$cfg"
+done

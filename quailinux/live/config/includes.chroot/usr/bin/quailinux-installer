@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+
+if command -v xhost >/dev/null 2>&1; then
+    xhost +si:localuser:root >/dev/null 2>&1 || true
+fi
+
+pkexec /usr/lib/quailinux/start-calamares
+
+if command -v xhost >/dev/null 2>&1; then
+    xhost -si:localuser:root >/dev/null 2>&1 || true
+fi

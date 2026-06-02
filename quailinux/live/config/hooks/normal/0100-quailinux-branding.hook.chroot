@@ -1,0 +1,69 @@
+#!/bin/sh
+set -eu
+
+printf 'QuaiLinux\n' > /etc/hostname
+
+cat > /etc/quailinux-release <<'EOF'
+QuaiLinux live image based on Debian
+EOF
+
+cat > /usr/lib/os-release <<'EOF'
+PRETTY_NAME="QuaiLinux 0.1"
+NAME="QuaiLinux"
+VERSION_ID="0.1"
+VERSION="0.1 (Trixie)"
+VERSION_CODENAME=trixie
+ID=quailinux
+ID_LIKE=debian
+HOME_URL="https://quailinux.local/"
+SUPPORT_URL="https://quailinux.local/support"
+BUG_REPORT_URL="https://quailinux.local/issues"
+EOF
+
+ln -sf ../usr/lib/os-release /etc/os-release
+
+cat > /etc/issue <<'EOF'
+QuaiLinux 0.1 \n \l
+EOF
+
+cat > /etc/issue.net <<'EOF'
+QuaiLinux 0.1
+EOF
+
+cat > /etc/motd <<'EOF'
+Welcome to QuaiLinux.
+EOF
+
+chmod +x /etc/skel/Desktop/quailinux-installer.desktop
+chmod +x /usr/bin/quailinux-installer /usr/lib/quailinux/start-calamares
+chmod 0440 /etc/sudoers.d/quailinux-live
+
+rm -f /usr/share/applications/calamares-install-debian.desktop
+rm -f /usr/share/applications/calamares.desktop.orig
+rm -f /etc/xdg/autostart/calamares-desktop-icon.desktop
+
+cat > /usr/share/applications/calamares-install-debian.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Install QuaiLinux
+GenericName=System Installer
+Comment=Install QuaiLinux to this computer
+Exec=quailinux-installer
+Icon=quailinux-installer
+Terminal=false
+StartupNotify=true
+Categories=Qt;KDE;System;
+NoDisplay=true
+EOF
+
+if [ -f /etc/calamares/settings.conf ]; then
+    sed -i 's/^branding:.*/branding: quailinux/' /etc/calamares/settings.conf
+fi
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications || true
+fi
+
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+fi

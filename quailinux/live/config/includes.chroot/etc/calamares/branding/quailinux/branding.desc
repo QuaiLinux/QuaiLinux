@@ -1,0 +1,21 @@
+componentName: quailinux
+strings:
+    productName:         QuaiLinux
+    shortProductName:    QuaiLinux
+    version:             0.1
+    shortVersion:        0.1
+    versionedName:       QuaiLinux 0.1
+    shortVersionedName:  QuaiLinux 0.1
+    bootloaderEntryName: QuaiLinux
+    productUrl:          https://quailinux.local/
+    supportUrl:          https://quailinux.local/support
+    knownIssuesUrl:      https://quailinux.local/issues
+images:
+    productLogo:         /usr/share/quailinux/artwork/icon.png
+    productIcon:         /usr/share/quailinux/artwork/icon.png
+    productWelcome:      /usr/share/quailinux/artwork/wallpaper.png
+style:
+    sidebarBackground:   "#2f4f21"
+    sidebarText:         "#ffffff"
+    sidebarTextSelect:   "#ffffff"
+    sidebarTextHighlight: "#d6bc7d"

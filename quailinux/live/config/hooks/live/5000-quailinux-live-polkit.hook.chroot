@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+mkdir -p /usr/share/polkit-1/rules.d
+cat > /usr/share/polkit-1/rules.d/49-quailinux-live.rules <<'EOF'
+polkit.addRule(function(action, subject) {
+    if (subject.local &&
+        subject.active &&
+        subject.user === "quai" &&
+        subject.isInGroup("sudo")) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+
+mkdir -p /etc/sudoers.d
+cat > /etc/sudoers.d/quailinux-live <<'EOF'
+quai ALL=(ALL) NOPASSWD: ALL
+EOF
+chmod 0440 /etc/sudoers.d/quailinux-live

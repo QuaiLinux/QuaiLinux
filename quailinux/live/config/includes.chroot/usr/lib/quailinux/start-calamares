@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+if [ "$(id -u)" -ne 0 ]; then
+    exec pkexec "$0" "$@"
+fi
+
+if [ -e /etc/fstab ] && [ ! -e /etc/fstab.orig.quailinux-calamares ]; then
+    mv /etc/fstab /etc/fstab.orig.quailinux-calamares
+fi
+
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+exec /usr/bin/calamares
