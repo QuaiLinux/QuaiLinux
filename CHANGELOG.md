@@ -24,6 +24,10 @@
 - Ran shell syntax checks for the installer launcher, Calamares starter,
   permissions repair script, profile hook, and branding hook.
 - Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Rebuilt the ARM64 live ISO and verified UEFI El Torito boot metadata, root
+  ownership for the SquashFS root and sudoers paths, the Calamares config
+  directory launch argument, the Calamares icon, root dark-theme config, and the
+  QuaiLinux wallpaper hash.
 
 ## 0.1.7 - 2026-06-03
 
