@@ -1,8 +1,19 @@
 #!/bin/sh
-set -eu
+set -u
+
+log=/tmp/quailinux-installer.log
+
+{
+    echo "=== QuaiLinux Calamares starter ==="
+    date
+    echo "user=$(id -un) uid=$(id -u)"
+    echo "display=${DISPLAY-}"
+    echo "wayland=${WAYLAND_DISPLAY-}"
+    echo "xdg_runtime_dir=${XDG_RUNTIME_DIR-}"
+} >> "$log" 2>&1
 
 if [ "$(id -u)" -ne 0 ]; then
-    exec pkexec "$0" "$@"
+    exec quailinux-installer "$@"
 fi
 
 if [ -e /etc/fstab ] && [ ! -e /etc/fstab.orig.quailinux-calamares ]; then
@@ -10,4 +21,11 @@ if [ -e /etc/fstab ] && [ ! -e /etc/fstab.orig.quailinux-calamares ]; then
 fi
 
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
-exec /usr/bin/calamares
+export CALAMARES_DISPLAY_NAME="QuaiLinux Installer"
+
+if [ ! -x /usr/bin/calamares ]; then
+    echo "calamares binary not found" >> "$log"
+    exit 127
+fi
+
+exec /usr/bin/calamares -d

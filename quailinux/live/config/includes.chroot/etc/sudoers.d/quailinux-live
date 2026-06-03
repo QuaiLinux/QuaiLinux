@@ -1,1 +1,2 @@
 quai ALL=(ALL) NOPASSWD: ALL
+quai ALL=(root) NOPASSWD:SETENV: /usr/bin/env *, /usr/lib/quailinux/start-calamares

@@ -16,5 +16,6 @@ EOF
 mkdir -p /etc/sudoers.d
 cat > /etc/sudoers.d/quailinux-live <<'EOF'
 quai ALL=(ALL) NOPASSWD: ALL
+quai ALL=(root) NOPASSWD:SETENV: /usr/bin/env *, /usr/lib/quailinux/start-calamares
 EOF
 chmod 0440 /etc/sudoers.d/quailinux-live

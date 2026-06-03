@@ -1,5 +1,16 @@
 #!/bin/sh
-set -eu
+set -u
+
+log=/tmp/quailinux-installer.log
+
+{
+    echo "=== QuaiLinux installer launcher ==="
+    date
+    echo "user=$(id -un) uid=$(id -u)"
+    echo "display=${DISPLAY-}"
+    echo "wayland=${WAYLAND_DISPLAY-}"
+    echo "xdg_runtime_dir=${XDG_RUNTIME_DIR-}"
+} >> "$log" 2>&1
 
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
@@ -7,8 +18,41 @@ if command -v xhost >/dev/null 2>&1; then
     xhost +si:localuser:root >/dev/null 2>&1 || true
 fi
 
-pkexec /usr/lib/quailinux/start-calamares
+run_installer() {
+    if [ "$(id -u)" -eq 0 ]; then
+        exec /usr/lib/quailinux/start-calamares
+    fi
+
+    if command -v sudo >/dev/null 2>&1; then
+        exec sudo env \
+            DISPLAY="${DISPLAY-}" \
+            WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
+            XAUTHORITY="${XAUTHORITY-}" \
+            XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR-}" \
+            DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS-}" \
+            QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR-1}" \
+            /usr/lib/quailinux/start-calamares
+    fi
+
+    exec pkexec env \
+        DISPLAY="${DISPLAY-}" \
+        WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
+        XAUTHORITY="${XAUTHORITY-}" \
+        XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR-}" \
+        DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS-}" \
+        QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR-1}" \
+        /usr/lib/quailinux/start-calamares
+}
+
+run_installer >> "$log" 2>&1
+status=$?
 
 if command -v xhost >/dev/null 2>&1; then
     xhost -si:localuser:root >/dev/null 2>&1 || true
 fi
+
+if [ "$status" -ne 0 ] && command -v kdialog >/dev/null 2>&1; then
+    kdialog --error "The QuaiLinux installer did not start. A log was written to $log."
+fi
+
+exit "$status"

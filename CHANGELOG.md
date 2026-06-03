@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.1.1 - 2026-06-03
+
+### Changed
+
+- Reworked the `Install QuaiLinux` launcher to start Calamares through
+  passwordless live-session `sudo` with the display/session environment
+  preserved.
+- Added `/tmp/quailinux-installer.log` logging for the installer launcher and
+  Calamares starter so failed launches can be debugged from the live session.
+- Updated live sudoers rules to allow the `quai` live user to run the Calamares
+  starter with required GUI environment variables.
+- Changed the Calamares starter to run `calamares -d` for better debug output.
+
+### Verification
+
+- Rebuilt the ARM64 live ISO locally after the launcher fix.
+- Verified the rebuilt ISO is still ARM64 UEFI bootable and still uses the
+  QuaiLinux live boot labels.
+- Verified the installer launcher, Calamares starter, and sudoers include are
+  present inside the SquashFS with root ownership and expected permissions.
+
+### Known Issues
+
+- The launcher has been fixed for the most likely GUI privilege/session failure,
+  but the full Calamares install flow still needs live boot testing.
+- Calamares modules and the live-to-disk installation flow are still not
+  considered finished.
+
 ## 0.1.0 - 2026-06-02
 
 ### Added

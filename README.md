@@ -21,12 +21,15 @@ Working:
 - dark Breeze Plasma defaults
 - QuaiLinux live boot menu labels
 - Calamares package included in the live system
-- `Install QuaiLinux` launcher routed through `pkexec`
+- `Install QuaiLinux` launcher with live-session sudo startup and debug logging
 
 Known issue:
 
-- Calamares is included and branded, but the installer flow is not finished yet.
-  Treat it as experimental until the Calamares modules are tested and fixed.
+- Calamares is included and branded, and the launcher now preserves the
+  live-session display environment. The full install flow is still experimental
+  until the Calamares modules are boot-tested and fixed.
+- If the installer does not start in the live session, check:
+  `/tmp/quailinux-installer.log`
 
 ## Repository Layout
 
