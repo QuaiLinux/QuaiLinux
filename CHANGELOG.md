@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.3 - 2026-06-03
+
+### Fixed
+
+- Fixed Calamares startup failure caused by missing required `slideshow` in the
+  QuaiLinux branding descriptor.
+- Added a simple QuaiLinux Calamares `show.qml` slideshow.
+- Added Calamares branding keys for window sizing, sidebar, navigation, and
+  capitalized sidebar color settings to match Calamares 3.3 expectations.
+- Made the installer launcher create and relax permissions on
+  `/tmp/quailinux-installer.log` before the root starter appends to it.
+
+### Verification
+
+- Rebuilt the ARM64 live ISO after the Calamares branding fix.
+- Verified `branding.desc`, `show.qml`, and the updated installer launcher are
+  present inside the SquashFS with root ownership.
+- Verified the ISO remains ARM64 UEFI bootable with volume ID `QUAILINUX_LIVE`.
+
 ## 0.1.2 - 2026-06-03
 
 ### Fixed

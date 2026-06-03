@@ -1,4 +1,11 @@
+---
 componentName: quailinux
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 800px,580px
+windowPlacement: center
+
 strings:
     productName:         QuaiLinux
     shortProductName:    QuaiLinux
@@ -10,12 +17,20 @@ strings:
     productUrl:          https://quailinux.local/
     supportUrl:          https://quailinux.local/support
     knownIssuesUrl:      https://quailinux.local/issues
+
 images:
     productLogo:         /usr/share/quailinux/artwork/icon.png
     productIcon:         /usr/share/quailinux/artwork/icon.png
     productWelcome:      /usr/share/quailinux/artwork/wallpaper.png
+
+sidebar: widget
+navigation: widget
+
 style:
-    sidebarBackground:   "#2f4f21"
-    sidebarText:         "#ffffff"
-    sidebarTextSelect:   "#ffffff"
-    sidebarTextHighlight: "#d6bc7d"
+    SidebarBackground:        "#2f4f21"
+    SidebarText:              "#ffffff"
+    SidebarTextCurrent:       "#ffffff"
+    SidebarBackgroundCurrent: "#496f38"
+
+slideshow: "show.qml"
+slideshowAPI: 2
