@@ -18,6 +18,10 @@
   live-permissions repair script, live desktop cleanup script, profile hook, and
   branding hook.
 - Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Rebuilt the ARM64 live ISO and verified UEFI El Torito boot metadata,
+  `/usr/bin/sudo` and `/usr/bin/pkexec` as `root:root` setuid binaries, root
+  ownership for `/etc/sudoers.d`, the post-Plasma desktop cleanup files, and no
+  UID 501/staff ownership in the SquashFS owner table.
 
 ## 0.1.8 - 2026-06-03
 
