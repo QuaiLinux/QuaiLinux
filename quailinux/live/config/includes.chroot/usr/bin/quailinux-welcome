@@ -31,6 +31,23 @@ DONE_FILE = Path.home() / ".config" / "quailinux" / "welcome-done"
 ICON_DIR = Path("/usr/share/quailinux/welcome/icons")
 
 CATEGORIES = {
+    "casual": {
+        "title": "Casual",
+        "icon": "casual.svg",
+        "summary": "Everyday apps for web, office, music, video, photos, scanning, and sharing.",
+        "packages": [
+            ("libreoffice", "Office documents, spreadsheets, and presentations"),
+            ("vlc", "Video and music player"),
+            ("thunderbird", "Email and calendar"),
+            ("gwenview", "Image viewer"),
+            ("elisa", "Music player"),
+            ("kdeconnect", "Phone and desktop integration"),
+            ("kcalc", "Calculator"),
+            ("filelight", "Disk usage viewer"),
+            ("skanlite", "Scanner app"),
+            ("plasma-discover-backend-flatpak", "Flatpak app-store support in Discover"),
+        ],
+    },
     "gamers": {
         "title": "For Gamers",
         "icon": "gamers.svg",

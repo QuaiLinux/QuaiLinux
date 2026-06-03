@@ -10,8 +10,44 @@ marker="${HOME:-}/.config/quailinux-wallpaper-applied"
 
 mkdir -p "$(dirname "$marker")"
 
+applied=0
+
 if command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then
-    plasma-apply-wallpaperimage "$wallpaper" >/dev/null 2>&1 || true
+    if plasma-apply-wallpaperimage "$wallpaper" >/dev/null 2>&1; then
+        applied=1
+    fi
 fi
 
-touch "$marker" 2>/dev/null || true
+script='
+var allDesktops = desktops();
+for (i = 0; i < allDesktops.length; i++) {
+    d = allDesktops[i];
+    d.wallpaperPlugin = "org.kde.image";
+    d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");
+    d.writeConfig("Image", "file:///usr/share/backgrounds/quailinux/wallpaper.png");
+    d.writeConfig("PreviewImage", "file:///usr/share/backgrounds/quailinux/wallpaper.png");
+}
+'
+
+if command -v qdbus6 >/dev/null 2>&1; then
+    if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1; then
+        applied=1
+    fi
+elif command -v qdbus >/dev/null 2>&1; then
+    if qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1; then
+        applied=1
+    fi
+fi
+
+config="${HOME:-}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+if command -v kwriteconfig6 >/dev/null 2>&1; then
+    kwriteconfig6 --file "$config" --group Containments --group 1 --group Wallpaper --group org.kde.image --group General --key Image "file://$wallpaper" >/dev/null 2>&1 || true
+    kwriteconfig6 --file "$config" --group Containments --group 1 --group Wallpaper --group org.kde.image --group General --key PreviewImage "file://$wallpaper" >/dev/null 2>&1 || true
+    applied=1
+elif command -v kwriteconfig5 >/dev/null 2>&1; then
+    kwriteconfig5 --file "$config" --group Containments --group 1 --group Wallpaper --group org.kde.image --group General --key Image "file://$wallpaper" >/dev/null 2>&1 || true
+    kwriteconfig5 --file "$config" --group Containments --group 1 --group Wallpaper --group org.kde.image --group General --key PreviewImage "file://$wallpaper" >/dev/null 2>&1 || true
+    applied=1
+fi
+
+[ "$applied" -eq 1 ] && touch "$marker" 2>/dev/null || true

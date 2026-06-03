@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.7 - 2026-06-03
+
+### Fixed
+
+- Added ARM64 GRUB/EFI packages to the live image and Calamares package step so
+  the Calamares bootloader module can run `grub-install`.
+- Hid leftover Debian/Calamares installer launchers and kept the live desktop
+  focused on one visible `Install QuaiLinux` launcher.
+- Hardened the wallpaper first-login helper so it tries Plasma DBus and config
+  writes before marking the QuaiLinux wallpaper as applied.
+
+### Added
+
+- Added a Casual category to the QuaiLinux Welcome app with everyday desktop
+  packages and a matching SVG icon.
+
+### Verification
+
+- Parsed the Calamares package and branding YAML files.
+- Ran shell syntax checks for the installer launchers, wallpaper helper,
+  profile hook, branding hook, and build script.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Checked the new Casual and GRUB package names against the Trixie ARM64
+  package cache.
+
 ## 0.1.6 - 2026-06-03
 
 ### Fixed
