@@ -29,6 +29,9 @@
 - Ran Python syntax compilation for the QuaiLinux Welcome app.
 - Checked the welcome app's Debian-native package names against the Trixie ARM64
   package cache; vendor/Kali-only entries are skipped by the app if unavailable.
+- Rebuilt the ARM64 live ISO and verified UEFI El Torito boot metadata, the
+  fixed Calamares settings, welcome app files, and QuaiLinux ASCII art inside
+  the image.
 
 ## 0.1.5 - 2026-06-03
 
