@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.5 - 2026-06-03
+
+### Changed
+
+- Updated the default QuaiLinux wallpaper from the newest
+  `/Users/mateocogeanu/Downloads/wallpaper.png` asset.
+
+### Verification
+
+- Rebuilt the ARM64 live ISO after the wallpaper update.
+- Verified the wallpaper inside `filesystem.squashfs` matches the downloaded
+  wallpaper asset hash.
+
 ## 0.1.4 - 2026-06-03
 
 ### Changed
