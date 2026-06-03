@@ -24,6 +24,9 @@
 - Ran Python syntax compilation for the QuaiLinux Welcome app.
 - Checked the new Casual and GRUB package names against the Trixie ARM64
   package cache.
+- Rebuilt the ARM64 live ISO and verified UEFI El Torito boot metadata,
+  `grub-install` inside the SquashFS, the Casual welcome assets, and the
+  QuaiLinux wallpaper hash.
 
 ## 0.1.6 - 2026-06-03
 
