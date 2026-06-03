@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.2 - 2026-06-03
+
+### Fixed
+
+- Fixed live ISO sudo startup by forcing `/etc/sudoers.d` and
+  `/etc/sudoers.d/quailinux-live` to be owned by `root:root` with safe sudoers
+  permissions.
+- Added the same ownership repair to the live boot hook so the live session
+  recreates the sudoers rule correctly.
+
+### Verification
+
+- Rebuilt the ARM64 live ISO after the sudoers ownership fix.
+- Verified `/etc/sudoers.d` is `root/root` with `0755` permissions inside the
+  SquashFS.
+- Verified `/etc/sudoers.d/quailinux-live` is `root/root` with `0440`
+  permissions inside the SquashFS.
+
 ## 0.1.1 - 2026-06-03
 
 ### Changed
