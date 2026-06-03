@@ -1,0 +1,32 @@
+#!/bin/sh
+set -u
+
+[ -d /run/live ] || exit 0
+[ "${USER:-}" = "quai" ] || exit 0
+
+desktop_dir="${HOME:-/home/quai}/Desktop"
+installer=/usr/share/applications/quailinux-installer.desktop
+target="$desktop_dir/quailinux-installer.desktop"
+
+mkdir -p "$desktop_dir"
+
+for candidate in "$desktop_dir"/*.desktop; do
+    [ -f "$candidate" ] || continue
+    case "$(basename "$candidate")" in
+        quailinux-installer.desktop) continue ;;
+    esac
+    if grep -Eiq 'Install Debian|calamares|debian-installer|install-debian' "$candidate" 2>/dev/null; then
+        rm -f "$candidate"
+    fi
+done
+
+rm -f \
+    "$desktop_dir/calamares.desktop" \
+    "$desktop_dir/calamares-install-debian.desktop" \
+    "$desktop_dir/install-debian.desktop" \
+    "$desktop_dir/debian-installer.desktop"
+
+if [ -r "$installer" ]; then
+    cp "$installer" "$target"
+    chmod +x "$target"
+fi

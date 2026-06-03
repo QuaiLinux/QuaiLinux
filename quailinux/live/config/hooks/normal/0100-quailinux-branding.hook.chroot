@@ -41,7 +41,8 @@ for file in \
     /usr/bin/neofetch \
     /usr/lib/quailinux/start-calamares \
     /usr/lib/quailinux/apply-wallpaper \
-    /usr/lib/quailinux/fix-live-permissions
+    /usr/lib/quailinux/fix-live-permissions \
+    /usr/lib/quailinux/clean-live-desktop
 do
     [ -f "$file" ] || continue
     chmod +x "$file"
@@ -51,6 +52,8 @@ chown root:root /etc/profile.d/quailinux-live-installer.sh
 chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
 chmod 0755 /etc/sudoers.d
 chmod 0440 /etc/sudoers.d/quailinux-live
+[ -f /usr/bin/sudo ] && chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
+[ -f /usr/bin/pkexec ] && chown root:root /usr/bin/pkexec && chmod 4755 /usr/bin/pkexec
 [ -f /etc/calamares/settings.conf ] && chown root:root /etc/calamares/settings.conf
 [ -f /usr/share/applications/quailinux-installer.desktop ] && chown root:root /usr/share/applications/quailinux-installer.desktop
 [ -d /root/.config ] && chown -R root:root /root/.config

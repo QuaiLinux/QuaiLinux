@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=QuaiLinux Desktop Cleanup
+Comment=Keep only the QuaiLinux installer launcher on the live desktop
+Exec=/usr/lib/quailinux/clean-live-desktop
+Icon=calamares
+Terminal=false
+X-KDE-autostart-after=panel
+X-GNOME-Autostart-enabled=true

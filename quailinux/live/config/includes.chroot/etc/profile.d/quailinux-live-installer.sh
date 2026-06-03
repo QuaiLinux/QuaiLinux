@@ -11,7 +11,7 @@ if [ -d /run/live ] && [ "${USER:-}" = "quai" ]; then
         "$desktop_dir/debian-installer.desktop"
     for candidate in "$desktop_dir"/*.desktop; do
         [ -f "$candidate" ] || continue
-        if grep -qi 'Install Debian' "$candidate" 2>/dev/null; then
+        if grep -Eiq 'Install Debian|calamares|debian-installer|install-debian' "$candidate" 2>/dev/null; then
             rm -f "$candidate"
         fi
     done

@@ -30,7 +30,7 @@ run_installer() {
         exec /usr/lib/quailinux/start-calamares
     fi
 
-    if command -v sudo >/dev/null 2>&1; then
+    if command -v sudo >/dev/null 2>&1 && [ -u /usr/bin/sudo ]; then
         exec sudo env \
             DISPLAY="${DISPLAY-}" \
             WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
@@ -43,16 +43,21 @@ run_installer() {
             /usr/lib/quailinux/start-calamares
     fi
 
-    exec pkexec env \
-        DISPLAY="${DISPLAY-}" \
-        WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
-        XAUTHORITY="${XAUTHORITY-}" \
-        XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR-}" \
-        DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS-}" \
-        QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR-1}" \
-        QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME-kde}" \
-        XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP-KDE}" \
-        /usr/lib/quailinux/start-calamares
+    if command -v pkexec >/dev/null 2>&1 && [ -u /usr/bin/pkexec ]; then
+        exec pkexec env \
+            DISPLAY="${DISPLAY-}" \
+            WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
+            XAUTHORITY="${XAUTHORITY-}" \
+            XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR-}" \
+            DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS-}" \
+            QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR-1}" \
+            QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME-kde}" \
+            XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP-KDE}" \
+            /usr/lib/quailinux/start-calamares
+    fi
+
+    echo "neither sudo nor pkexec is usable" >&2
+    return 127
 }
 
 run_installer >> "$log" 2>&1

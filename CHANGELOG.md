@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.9 - 2026-06-03
+
+### Fixed
+
+- Restored `root:root` ownership and `4755` setuid mode for `/usr/bin/sudo`
+  and `/usr/bin/pkexec` in the build hook and live boot repair script.
+- Made the `Install QuaiLinux` launcher skip broken sudo and fall back to
+  `pkexec` when needed.
+- Added a KDE autostart desktop cleanup that removes leftover `Install Debian`
+  desktop launchers after Plasma starts and recreates only `Install QuaiLinux`.
+
+### Verification
+
+- Parsed the Calamares settings, package module, and branding YAML files.
+- Ran shell syntax checks for the installer launcher, Calamares starter,
+  live-permissions repair script, live desktop cleanup script, profile hook, and
+  branding hook.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+
 ## 0.1.8 - 2026-06-03
 
 ### Fixed
