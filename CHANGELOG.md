@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.10 - 2026-06-03
+
+### Fixed
+
+- Removed the Calamares `-c /etc/calamares` launch override so Calamares uses
+  `/etc/calamares/settings.conf` while keeping its normal
+  `/usr/share/calamares/qml` application data directory.
+- Removed the invalid literal `${LIBDIR}` Calamares module-search override.
+- Overrode Debian's `add-calamares-desktop-icon` helper so it cannot recreate
+  an `Install Debian` launcher and instead leaves only `Install QuaiLinux`.
+- Recreated `/tmp/quailinux-installer.log` as a writable live-session log file
+  during boot-time permission repair.
+
+### Verification
+
+- Parsed the Calamares settings, package module, and branding YAML files.
+- Ran shell syntax checks for the Calamares starter, live permission repair,
+  desktop cleanup, Debian icon override, and branding hook.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+
 ## 0.1.9 - 2026-06-03
 
 ### Fixed

@@ -43,4 +43,4 @@ if [ ! -r /etc/calamares/settings.conf ]; then
     exit 78
 fi
 
-exec /usr/bin/calamares -d -c /etc/calamares
+exec /usr/bin/calamares -d

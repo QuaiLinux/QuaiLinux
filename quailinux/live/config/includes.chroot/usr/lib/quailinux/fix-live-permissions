@@ -18,6 +18,5 @@ if [ -f /etc/sudoers.d/quailinux-live ]; then
     chmod 0440 /etc/sudoers.d/quailinux-live
 fi
 
-if [ -f /tmp/quailinux-installer.log ]; then
-    chmod 0666 /tmp/quailinux-installer.log || true
-fi
+rm -f /tmp/quailinux-installer.log
+install -m 0666 /dev/null /tmp/quailinux-installer.log

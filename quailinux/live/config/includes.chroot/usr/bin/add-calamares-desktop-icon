@@ -1,0 +1,16 @@
+#!/bin/sh
+set -u
+
+desktop_dir=$(xdg-user-dir DESKTOP 2>/dev/null || printf '%s/Desktop\n' "${HOME:-/home/quai}")
+mkdir -p "$desktop_dir"
+
+rm -f \
+    "$desktop_dir/calamares-install-debian.desktop" \
+    "$desktop_dir/calamares.desktop" \
+    "$desktop_dir/install-debian.desktop" \
+    "$desktop_dir/debian-installer.desktop"
+
+if [ -r /usr/share/applications/quailinux-installer.desktop ]; then
+    cp /usr/share/applications/quailinux-installer.desktop "$desktop_dir/quailinux-installer.desktop"
+    chmod +x "$desktop_dir/quailinux-installer.desktop"
+fi

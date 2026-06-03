@@ -36,6 +36,7 @@ EOF
 
 for file in \
     /usr/bin/quailinux-installer \
+    /usr/bin/add-calamares-desktop-icon \
     /usr/bin/quailinux-welcome \
     /usr/bin/quailinux-install-deb \
     /usr/bin/neofetch \
