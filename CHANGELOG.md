@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.1.4 - 2026-06-03
+
+### Changed
+
+- Replaced the `Install QuaiLinux` desktop/menu icon with the standard
+  `system-software-install` installer icon instead of using the QuaiLinux logo.
+- Updated the default QuaiLinux wallpaper from the latest
+  `/Users/mateocogeanu/Downloads/wallpaper.png` asset.
+- Added system-wide and skeleton Plasma wallpaper defaults with
+  `PreviewImage` entries.
+- Added a one-time KDE autostart helper that applies the QuaiLinux wallpaper on
+  first login, then leaves later user wallpaper changes alone.
+- Moved the live desktop installer icon out of `/etc/skel/Desktop` and into a
+  live-session-only profile hook so installed users do not get the installer
+  icon on their desktop.
+- Added an initial common package/codecs batch to the live image and Calamares
+  setup package step: Firefox ESR, FFmpeg, `libavcodec-extra`, GStreamer
+  plugins, PipeWire audio, WirePlumber, archive tools, emoji fonts, and
+  Mesa VA/Vulkan drivers.
+
+### Verification
+
+- Rebuilt the ARM64 live ISO after the wallpaper, installer icon, desktop, and
+  package changes.
+- Verified the ISO wallpaper hash matches the new downloaded wallpaper asset.
+- Verified `/etc/skel/Desktop/quailinux-installer.desktop` is absent inside the
+  SquashFS.
+- Verified the installer launcher uses `Icon=system-software-install`.
+- Verified the package batch is present in the live image package manifest and
+  in Calamares `packages.conf`.
+
 ## 0.1.3 - 2026-06-03
 
 ### Fixed

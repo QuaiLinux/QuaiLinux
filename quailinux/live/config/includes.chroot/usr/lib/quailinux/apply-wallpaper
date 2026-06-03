@@ -1,0 +1,17 @@
+#!/bin/sh
+set -u
+
+wallpaper=/usr/share/backgrounds/quailinux/wallpaper.png
+marker="${HOME:-}/.config/quailinux-wallpaper-applied"
+
+[ -n "${HOME:-}" ] || exit 0
+[ -f "$wallpaper" ] || exit 0
+[ -e "$marker" ] && exit 0
+
+mkdir -p "$(dirname "$marker")"
+
+if command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then
+    plasma-apply-wallpaperimage "$wallpaper" >/dev/null 2>&1 || true
+fi
+
+touch "$marker" 2>/dev/null || true

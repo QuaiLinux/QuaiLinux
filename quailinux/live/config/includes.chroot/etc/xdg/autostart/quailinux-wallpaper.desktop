@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=QuaiLinux Wallpaper
+Exec=/usr/lib/quailinux/apply-wallpaper
+OnlyShowIn=KDE;
+X-KDE-autostart-after=panel
+X-KDE-StartupNotify=false
+NoDisplay=true
