@@ -21,6 +21,11 @@
 - Ran shell syntax checks for the Calamares starter, live permission repair,
   desktop cleanup, Debian icon override, and branding hook.
 - Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Rebuilt the ARM64 live ISO and verified UEFI El Torito boot metadata,
+  `/usr/share/calamares/qml` inside the SquashFS, the Calamares launcher using
+  the normal settings path, hidden QuaiLinux overrides for Debian Calamares
+  desktop files, the Debian desktop-icon helper override, and the QuaiLinux
+  wallpaper hash.
 
 ## 0.1.9 - 2026-06-03
 
