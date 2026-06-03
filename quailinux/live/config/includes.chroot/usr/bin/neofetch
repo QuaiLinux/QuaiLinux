@@ -1,0 +1,8 @@
+#!/bin/sh
+if command -v /usr/bin/fastfetch >/dev/null 2>&1; then
+    exec /usr/bin/fastfetch "$@"
+fi
+
+cat /usr/share/quailinux/ascii/quailinux.txt
+printf '\nOS  QuaiLinux\n'
+uname -srvmo | sed 's/^/Kernel  /'

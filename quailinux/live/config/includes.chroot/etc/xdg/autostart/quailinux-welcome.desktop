@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=QuaiLinux Welcome
+Comment=Choose optional QuaiLinux package sets
+Exec=sh -c 'test -d /run/live && exit 0; exec quailinux-welcome --autostart'
+Icon=quailinux
+Terminal=false
+X-KDE-autostart-after=panel
+X-GNOME-Autostart-enabled=true

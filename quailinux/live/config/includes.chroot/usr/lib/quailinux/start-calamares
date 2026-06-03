@@ -2,6 +2,11 @@
 set -u
 
 log=/tmp/quailinux-installer.log
+if ! touch "$log" 2>/dev/null || ! chmod 0666 "$log" 2>/dev/null; then
+    log="/tmp/quailinux-installer.$(id -u).log"
+    : > "$log" 2>/dev/null || log=/dev/null
+    chmod 0666 "$log" 2>/dev/null || true
+fi
 
 {
     echo "=== QuaiLinux Calamares starter ==="
@@ -28,4 +33,12 @@ if [ ! -x /usr/bin/calamares ]; then
     exit 127
 fi
 
-exec /usr/bin/calamares -d
+if [ ! -r /etc/calamares/settings.conf ]; then
+    echo "missing /etc/calamares/settings.conf" >> "$log"
+    if command -v kdialog >/dev/null 2>&1; then
+        kdialog --error "The QuaiLinux installer configuration is missing: /etc/calamares/settings.conf"
+    fi
+    exit 78
+fi
+
+exec /usr/bin/calamares -d -c /etc/calamares/settings.conf

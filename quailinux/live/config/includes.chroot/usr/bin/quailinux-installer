@@ -2,8 +2,11 @@
 set -u
 
 log=/tmp/quailinux-installer.log
-touch "$log" 2>/dev/null || true
-chmod 0666 "$log" 2>/dev/null || true
+if ! touch "$log" 2>/dev/null || ! chmod 0666 "$log" 2>/dev/null; then
+    log="/tmp/quailinux-installer.$(id -u).log"
+    : > "$log" 2>/dev/null || log=/dev/null
+    chmod 0666 "$log" 2>/dev/null || true
+fi
 
 {
     echo "=== QuaiLinux installer launcher ==="

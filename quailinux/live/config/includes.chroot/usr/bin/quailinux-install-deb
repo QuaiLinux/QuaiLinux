@@ -1,0 +1,50 @@
+#!/bin/sh
+set -u
+
+if [ "$#" -lt 1 ]; then
+    if command -v kdialog >/dev/null 2>&1; then
+        kdialog --error "Choose a .deb package to install."
+    else
+        printf '%s\n' "Choose a .deb package to install." >&2
+    fi
+    exit 2
+fi
+
+deb=$1
+case "$deb" in
+    *.deb) ;;
+    *)
+        if command -v kdialog >/dev/null 2>&1; then
+            kdialog --error "This is not a .deb package: $deb"
+        fi
+        exit 2
+        ;;
+esac
+
+if [ ! -r "$deb" ]; then
+    if command -v kdialog >/dev/null 2>&1; then
+        kdialog --error "Cannot read package: $deb"
+    fi
+    exit 1
+fi
+
+deb=$(readlink -f "$deb")
+
+cmd='set -e
+echo "Installing Debian package:"
+printf "  %s\n\n" "$1"
+sudo apt update
+sudo apt install -y "$1"
+echo
+echo "Done. Press Enter to close."
+read _'
+
+if command -v konsole >/dev/null 2>&1; then
+    exec konsole --hold -e sh -c "$cmd" quailinux-install-deb "$deb"
+fi
+
+if command -v x-terminal-emulator >/dev/null 2>&1; then
+    exec x-terminal-emulator -e sh -c "$cmd" quailinux-install-deb "$deb"
+fi
+
+exec sh -c "$cmd" quailinux-install-deb "$deb"

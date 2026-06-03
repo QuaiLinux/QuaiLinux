@@ -34,12 +34,23 @@ cat > /etc/motd <<'EOF'
 Welcome to QuaiLinux.
 EOF
 
-chmod +x /usr/bin/quailinux-installer /usr/lib/quailinux/start-calamares /usr/lib/quailinux/apply-wallpaper
-chown root:root /usr/bin/quailinux-installer /usr/lib/quailinux/start-calamares /usr/lib/quailinux/apply-wallpaper
+for file in \
+    /usr/bin/quailinux-installer \
+    /usr/bin/quailinux-welcome \
+    /usr/bin/quailinux-install-deb \
+    /usr/bin/neofetch \
+    /usr/lib/quailinux/start-calamares \
+    /usr/lib/quailinux/apply-wallpaper
+do
+    [ -f "$file" ] || continue
+    chmod +x "$file"
+    chown root:root "$file"
+done
 chown root:root /etc/profile.d/quailinux-live-installer.sh
 chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
 chmod 0755 /etc/sudoers.d
 chmod 0440 /etc/sudoers.d/quailinux-live
+[ -f /etc/calamares/settings.conf ] && chown root:root /etc/calamares/settings.conf
 
 rm -f /usr/share/applications/calamares-install-debian.desktop
 rm -f /usr/share/applications/calamares.desktop.orig
@@ -61,6 +72,11 @@ EOF
 
 if [ -f /etc/calamares/settings.conf ]; then
     sed -i 's/^branding:.*/branding: quailinux/' /etc/calamares/settings.conf
+fi
+
+if [ -f /usr/share/quailinux/artwork/icon.png ]; then
+    install -d /usr/share/icons/hicolor/256x256/apps
+    install -m 0644 /usr/share/quailinux/artwork/icon.png /usr/share/icons/hicolor/256x256/apps/quailinux.png
 fi
 
 if command -v update-desktop-database >/dev/null 2>&1; then

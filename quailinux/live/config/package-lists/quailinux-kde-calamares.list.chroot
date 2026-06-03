@@ -23,6 +23,9 @@ unrar-free
 fonts-noto-color-emoji
 mesa-va-drivers
 mesa-vulkan-drivers
+fastfetch
+python3-pyqt6
+gdebi
 network-manager
 plasma-nm
 sudo

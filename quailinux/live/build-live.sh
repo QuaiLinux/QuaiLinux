@@ -23,8 +23,8 @@ lb config \
     --architectures "$arch" \
     --binary-images iso-hybrid \
     --archive-areas "main contrib non-free non-free-firmware" \
-    --debian-installer live \
-    --debian-installer-gui true \
+    --debian-installer false \
+    --debian-installer-gui false \
     --firmware-binary true \
     --firmware-chroot true \
     --iso-application "QuaiLinux Live" \

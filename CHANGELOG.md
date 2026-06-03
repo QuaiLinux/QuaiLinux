@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.1.6 - 2026-06-03
+
+### Fixed
+
+- Added an explicit QuaiLinux `/etc/calamares/settings.conf` so Calamares does
+  not fail when Debian's default settings file is absent.
+- Made the installer launcher and root starter fall back to a per-user log file
+  if `/tmp/quailinux-installer.log` has stale permissions.
+- Changed the live-build profile to build a live-Calamares ISO without the
+  extra Debian Installer payload.
+
+### Added
+
+- Added QuaiLinux ASCII art for `fastfetch` and a `neofetch` compatibility
+  launcher.
+- Added a first-login Qt/KDE-style QuaiLinux Welcome app with large Gamers,
+  Artists, Programmers, and Hackers package-set cards and opt-out package
+  checkboxes.
+- Added a terminal-backed `.deb` installer handler so double-clicked Debian
+  packages install through `apt` and resolve missing dependencies.
+
+### Verification
+
+- Parsed the Calamares settings, package module, and branding YAML files.
+- Ran shell syntax checks for the installer, `.deb` handler, build script, and
+  branding hook.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Checked the welcome app's Debian-native package names against the Trixie ARM64
+  package cache; vendor/Kali-only entries are skipped by the app if unavailable.
+
 ## 0.1.5 - 2026-06-03
 
 ### Changed

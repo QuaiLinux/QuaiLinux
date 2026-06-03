@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+import os
+import shlex
+import subprocess
+import sys
+from pathlib import Path
+
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QDialog,
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
+
+
+DONE_FILE = Path.home() / ".config" / "quailinux" / "welcome-done"
+ICON_DIR = Path("/usr/share/quailinux/welcome/icons")
+
+CATEGORIES = {
+    "gamers": {
+        "title": "For Gamers",
+        "icon": "gamers.svg",
+        "summary": "Game launchers, compatibility tools, voice chat, streaming, and GPU helpers.",
+        "packages": [
+            ("steam-installer", "Steam installer, if available from configured repositories"),
+            ("lutris", "Lutris game manager"),
+            ("wine", "Wine Windows compatibility layer"),
+            ("winetricks", "Wine helper scripts"),
+            ("gamemode", "GameMode performance tuning"),
+            ("mangohud", "MangoHud performance overlay"),
+            ("vkbasalt", "Vulkan post-processing layer"),
+            ("obs-studio", "OBS Studio streaming and recording"),
+            ("discord", "Discord voice chat, if available from configured repositories"),
+            ("flatpak", "Flatpak support for Steam and other stores"),
+            ("plasma-discover-backend-flatpak", "Flatpak app-store support in Discover"),
+        ],
+    },
+    "artists": {
+        "title": "For Artists",
+        "icon": "artists.svg",
+        "summary": "Drawing, 3D, video, audio, photography, publishing, and creative utilities.",
+        "packages": [
+            ("krita", "Digital painting"),
+            ("inkscape", "Vector graphics"),
+            ("blender", "3D creation"),
+            ("gimp", "Image editing"),
+            ("darktable", "Photography workflow"),
+            ("kdenlive", "Video editing"),
+            ("audacity", "Audio editing"),
+            ("scribus", "Desktop publishing"),
+            ("fontforge", "Font design"),
+        ],
+    },
+    "programmers": {
+        "title": "For Programmers",
+        "icon": "programmers.svg",
+        "summary": "Editors, compilers, containers, version control, runtimes, and build tools.",
+        "packages": [
+            ("code", "Visual Studio Code, if available from configured repositories"),
+            ("intellij-idea-community", "IntelliJ IDEA Community, if available from configured repositories"),
+            ("kdevelop", "KDE development environment"),
+            ("kate", "KDE advanced text editor"),
+            ("geany", "Lightweight code editor"),
+            ("git", "Version control"),
+            ("build-essential", "Compiler and build essentials"),
+            ("cmake", "CMake build system"),
+            ("ninja-build", "Ninja build tool"),
+            ("python3-pip", "Python package installer"),
+            ("python3-venv", "Python virtual environments"),
+            ("nodejs", "Node.js runtime"),
+            ("npm", "Node package manager"),
+            ("openjdk-21-jdk", "Java development kit"),
+            ("docker.io", "Docker engine"),
+            ("podman", "Rootless containers"),
+            ("virt-manager", "Virtual machine manager"),
+            ("qemu-system", "QEMU system emulators"),
+            ("flatpak", "Flatpak support for VS Code/IntelliJ-style IDEs"),
+            ("plasma-discover-backend-flatpak", "Flatpak app-store support in Discover"),
+        ],
+    },
+    "hackers": {
+        "title": "For Hackers",
+        "icon": "hackers.svg",
+        "summary": "Security learning and auditing tools from Debian repositories.",
+        "packages": [
+            ("kali-linux-everything", "Kali full tool metapackage, if Kali repositories are configured"),
+            ("kali-linux-large", "Large Kali tool metapackage, if Kali repositories are configured"),
+            ("nmap", "Network mapper"),
+            ("wireshark", "Packet analysis"),
+            ("tcpdump", "Packet capture"),
+            ("john", "Password auditing"),
+            ("hydra", "Login auditing"),
+            ("sqlmap", "SQL injection testing"),
+            ("nikto", "Web server scanner"),
+            ("dirb", "Web content scanner"),
+            ("aircrack-ng", "Wireless auditing"),
+            ("metasploit-framework", "Metasploit, if available from configured repositories"),
+            ("wordlists", "Security wordlists, if available"),
+        ],
+    },
+}
+
+
+class CategoryCard(QFrame):
+    def __init__(self, key, data, on_open):
+        super().__init__()
+        self.key = key
+        self.setObjectName("CategoryCard")
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setMinimumHeight(210)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(22, 22, 22, 22)
+        layout.setSpacing(12)
+
+        icon = QLabel()
+        pix = QPixmap(str(ICON_DIR / data["icon"]))
+        icon.setPixmap(pix.scaled(72, 72, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+        icon.setFixedSize(76, 76)
+        layout.addWidget(icon)
+
+        title = QLabel(data["title"])
+        title.setObjectName("CardTitle")
+        layout.addWidget(title)
+
+        summary = QLabel(data["summary"])
+        summary.setWordWrap(True)
+        summary.setObjectName("CardSummary")
+        layout.addWidget(summary)
+        layout.addStretch()
+
+        button = QPushButton("Choose packages")
+        button.clicked.connect(lambda: on_open(key))
+        layout.addWidget(button)
+
+        self._on_open = on_open
+
+    def mouseDoubleClickEvent(self, event):
+        self._on_open(self.key)
+        super().mouseDoubleClickEvent(event)
+
+
+class PackagePage(QWidget):
+    def __init__(self, key, data, go_home):
+        super().__init__()
+        self.key = key
+        self.checks = []
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(22, 22, 22, 22)
+        outer.setSpacing(14)
+
+        top = QHBoxLayout()
+        back = QPushButton("Back")
+        back.clicked.connect(go_home)
+        top.addWidget(back)
+        title = QLabel(data["title"])
+        title.setObjectName("PageTitle")
+        top.addWidget(title, 1)
+        outer.addLayout(top)
+
+        summary = QLabel(data["summary"])
+        summary.setWordWrap(True)
+        outer.addWidget(summary)
+
+        listbox = QListWidget()
+        for package, description in data["packages"]:
+            item = QListWidgetItem()
+            item.setSizeHint(item.sizeHint())
+            checkbox = QCheckBox(f"{package} - {description}")
+            checkbox.setChecked(True)
+            self.checks.append((checkbox, package))
+            listbox.addItem(item)
+            listbox.setItemWidget(item, checkbox)
+        outer.addWidget(listbox, 1)
+
+        buttons = QHBoxLayout()
+        select_all = QPushButton("Select all")
+        select_all.clicked.connect(lambda: self.set_all(True))
+        select_none = QPushButton("Select none")
+        select_none.clicked.connect(lambda: self.set_all(False))
+        install = QPushButton("Install selected")
+        install.setObjectName("PrimaryButton")
+        install.clicked.connect(self.install_selected)
+        buttons.addWidget(select_all)
+        buttons.addWidget(select_none)
+        buttons.addStretch()
+        buttons.addWidget(install)
+        outer.addLayout(buttons)
+
+    def set_all(self, value):
+        for checkbox, _package in self.checks:
+            checkbox.setChecked(value)
+
+    def selected_packages(self):
+        return [package for checkbox, package in self.checks if checkbox.isChecked()]
+
+    def install_selected(self):
+        packages = self.selected_packages()
+        if not packages:
+            QMessageBox.information(self, "Nothing selected", "Choose at least one package first.")
+            return
+
+        package_args = " ".join(shlex.quote(pkg) for pkg in packages)
+        command = (
+            "set -e; "
+            "echo 'Updating package lists...'; sudo apt update; "
+            "installable=''; skipped=''; "
+            f"for pkg in {package_args}; do "
+            "if apt-cache show \"$pkg\" >/dev/null 2>&1; then installable=\"$installable $pkg\"; else skipped=\"$skipped $pkg\"; fi; "
+            "done; "
+            "if [ -n \"$installable\" ]; then echo \"Installing:$installable\"; sudo apt install -y $installable; fi; "
+            "if [ -n \"$skipped\" ]; then echo; echo \"Skipped because they are not in the configured repositories:$skipped\"; fi; "
+            "echo; echo 'Done. Press Enter to close.'; read _"
+        )
+        if shutil_which("konsole"):
+            subprocess.Popen(["konsole", "--hold", "-e", "sh", "-c", command])
+        else:
+            subprocess.Popen(["x-terminal-emulator", "-e", "sh", "-c", command])
+
+
+def shutil_which(name):
+    for directory in os.environ.get("PATH", "").split(os.pathsep):
+        candidate = Path(directory) / name
+        if candidate.exists() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
+class Welcome(QDialog):
+    def __init__(self, autostart=False):
+        super().__init__()
+        self.autostart = autostart
+        self.setWindowTitle("QuaiLinux Welcome")
+        self.setMinimumSize(920, 620)
+        self.setWindowIcon(QIcon("/usr/share/quailinux/artwork/icon.png"))
+
+        root = QVBoxLayout(self)
+        root.setContentsMargins(24, 24, 24, 24)
+        root.setSpacing(18)
+
+        header = QHBoxLayout()
+        titlebox = QVBoxLayout()
+        title = QLabel("Welcome to QuaiLinux")
+        title.setObjectName("HeroTitle")
+        subtitle = QLabel("Pick the setup that fits you. You can opt out of anything before installing.")
+        subtitle.setObjectName("HeroSubtitle")
+        subtitle.setWordWrap(True)
+        titlebox.addWidget(title)
+        titlebox.addWidget(subtitle)
+        header.addLayout(titlebox, 1)
+        skip = QPushButton("Do not show again")
+        skip.clicked.connect(self.mark_done_and_close)
+        header.addWidget(skip)
+        root.addLayout(header)
+
+        self.stack = QStackedWidget()
+        root.addWidget(self.stack, 1)
+
+        home = QWidget()
+        grid = QGridLayout(home)
+        grid.setSpacing(16)
+        keys = list(CATEGORIES)
+        for index, key in enumerate(keys):
+            card = CategoryCard(key, CATEGORIES[key], self.open_category)
+            grid.addWidget(card, index // 2, index % 2)
+        self.stack.addWidget(home)
+
+        self.pages = {}
+        for key, data in CATEGORIES.items():
+            page = PackagePage(key, data, self.go_home)
+            self.pages[key] = page
+            self.stack.addWidget(page)
+
+        self.setStyleSheet("""
+            QDialog { background: palette(window); }
+            QLabel#HeroTitle { font-size: 30px; font-weight: 700; }
+            QLabel#HeroSubtitle { font-size: 14px; color: palette(mid); }
+            QLabel#CardTitle { font-size: 22px; font-weight: 700; }
+            QLabel#CardSummary { color: palette(mid); }
+            QLabel#PageTitle { font-size: 24px; font-weight: 700; }
+            QFrame#CategoryCard {
+                border: 1px solid palette(midlight);
+                border-radius: 8px;
+                background: palette(base);
+            }
+            QFrame#CategoryCard:hover {
+                border: 1px solid palette(highlight);
+            }
+            QPushButton {
+                min-height: 34px;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+            QPushButton#PrimaryButton {
+                font-weight: 700;
+            }
+        """)
+
+    def open_category(self, key):
+        self.stack.setCurrentWidget(self.pages[key])
+
+    def go_home(self):
+        self.stack.setCurrentIndex(0)
+
+    def mark_done_and_close(self):
+        DONE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        DONE_FILE.write_text("done\n")
+        self.accept()
+
+    def closeEvent(self, event):
+        if self.autostart:
+            DONE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            DONE_FILE.write_text("done\n")
+        super().closeEvent(event)
+
+
+def main():
+    autostart = "--autostart" in sys.argv
+    if autostart and DONE_FILE.exists():
+        return 0
+    app = QApplication(sys.argv)
+    dialog = Welcome(autostart=autostart)
+    dialog.show()
+    return app.exec()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=QuaiLinux Welcome
+GenericName=Welcome App
+Comment=Install optional QuaiLinux package sets
+Exec=quailinux-welcome
+Icon=quailinux
+Terminal=false
+StartupNotify=true
+Categories=Qt;KDE;System;

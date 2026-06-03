@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Install Debian Package
+GenericName=Package Installer
+Comment=Install a local .deb package and resolve missing dependencies
+Exec=quailinux-install-deb %f
+Icon=package-install
+Terminal=false
+MimeType=application/vnd.debian.binary-package;
+Categories=Qt;KDE;System;PackageManager;
+NoDisplay=true
