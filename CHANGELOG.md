@@ -10,6 +10,8 @@
 - Removed the invalid literal `${LIBDIR}` Calamares module-search override.
 - Overrode Debian's `add-calamares-desktop-icon` helper so it cannot recreate
   an `Install Debian` launcher and instead leaves only `Install QuaiLinux`.
+- Added hidden QuaiLinux overrides for Calamares' Debian desktop files so
+  package-provided menu entries no longer say `Install Debian`.
 - Recreated `/tmp/quailinux-installer.log` as a writable live-session log file
   during boot-time permission repair.
 
