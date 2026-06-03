@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.8 - 2026-06-03
+
+### Fixed
+
+- Fixed the `Install QuaiLinux` launcher passing Calamares the settings file
+  path as a config directory; it now starts Calamares with `/etc/calamares`.
+- Added a live boot-time permissions repair service so `/etc/sudoers.d` and
+  `/etc/sudoers.d/quailinux-live` are forced back to root ownership before the
+  desktop session uses sudo.
+- Expanded live desktop cleanup to remove leftover `Install Debian` launchers
+  by filename and by desktop-file contents.
+
+### Changed
+
+- Switched the `Install QuaiLinux` launcher icon to the Calamares installer icon.
+- Added root KDE dark-theme config and preserved KDE/Qt theme environment when
+  launching Calamares as root.
+
+### Verification
+
+- Parsed the Calamares settings, package module, and branding YAML files.
+- Ran shell syntax checks for the installer launcher, Calamares starter,
+  permissions repair script, profile hook, and branding hook.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+
 ## 0.1.7 - 2026-06-03
 
 ### Fixed

@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+if [ -d /etc/sudoers.d ]; then
+    chown root:root /etc/sudoers.d
+    chmod 0755 /etc/sudoers.d
+fi
+
+if [ -f /etc/sudoers.d/quailinux-live ]; then
+    chown root:root /etc/sudoers.d/quailinux-live
+    chmod 0440 /etc/sudoers.d/quailinux-live
+fi
+
+if [ -f /tmp/quailinux-installer.log ]; then
+    chmod 0666 /tmp/quailinux-installer.log || true
+fi

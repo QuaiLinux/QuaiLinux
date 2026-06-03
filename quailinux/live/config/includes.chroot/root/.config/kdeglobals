@@ -1,0 +1,10 @@
+[KDE]
+LookAndFeelPackage=org.kde.breezedark.desktop
+SingleClick=false
+
+[General]
+ColorScheme=BreezeDark
+Name=QuaiLinux
+
+[Icons]
+Theme=breeze-dark

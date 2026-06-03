@@ -40,7 +40,8 @@ for file in \
     /usr/bin/quailinux-install-deb \
     /usr/bin/neofetch \
     /usr/lib/quailinux/start-calamares \
-    /usr/lib/quailinux/apply-wallpaper
+    /usr/lib/quailinux/apply-wallpaper \
+    /usr/lib/quailinux/fix-live-permissions
 do
     [ -f "$file" ] || continue
     chmod +x "$file"
@@ -51,6 +52,11 @@ chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
 chmod 0755 /etc/sudoers.d
 chmod 0440 /etc/sudoers.d/quailinux-live
 [ -f /etc/calamares/settings.conf ] && chown root:root /etc/calamares/settings.conf
+[ -f /usr/share/applications/quailinux-installer.desktop ] && chown root:root /usr/share/applications/quailinux-installer.desktop
+[ -d /root/.config ] && chown -R root:root /root/.config
+
+mkdir -p /etc/systemd/system/multi-user.target.wants
+ln -sf ../quailinux-live-permissions.service /etc/systemd/system/multi-user.target.wants/quailinux-live-permissions.service
 
 rm -f /usr/share/applications/calamares-install-debian.desktop
 rm -f /usr/share/applications/calamares.desktop.orig
@@ -66,7 +72,7 @@ Name=Install QuaiLinux
 GenericName=System Installer
 Comment=Install QuaiLinux to this computer
 Exec=quailinux-installer
-Icon=system-software-install
+Icon=calamares
 Terminal=false
 StartupNotify=true
 Categories=Qt;KDE;System;
@@ -80,7 +86,7 @@ Name=Install QuaiLinux
 GenericName=System Installer
 Comment=Install QuaiLinux to this computer
 Exec=quailinux-installer
-Icon=system-software-install
+Icon=calamares
 Terminal=false
 StartupNotify=true
 Categories=Qt;KDE;System;

@@ -26,6 +26,8 @@ if [ -e /etc/fstab ] && [ ! -e /etc/fstab.orig.quailinux-calamares ]; then
 fi
 
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export QT_QPA_PLATFORMTHEME=kde
+export XDG_CURRENT_DESKTOP=KDE
 export CALAMARES_DISPLAY_NAME="QuaiLinux Installer"
 
 if [ ! -x /usr/bin/calamares ]; then
@@ -41,4 +43,4 @@ if [ ! -r /etc/calamares/settings.conf ]; then
     exit 78
 fi
 
-exec /usr/bin/calamares -d -c /etc/calamares/settings.conf
+exec /usr/bin/calamares -d -c /etc/calamares
