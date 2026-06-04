@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.18 - 2026-06-04
+
+### Fixed
+
+- Rebuilt the ARM64 live filesystem with `/dev`, `/proc`, `/sys`, `/run`, and
+  `/tmp` present again after the previous fast SquashFS rebuild excluded those
+  runtime mount directories and could reach GRUB without starting the live OS.
+
+### Verification
+
+- Verified the corrected SquashFS contains the live runtime mount directories,
+  the installer no-sleep inhibitor commands remain present, the ISO volume ID
+  is `QUAILINUX_LIVE`, the GRUB menu still shows `Try or Install QuaiLinux`
+  with the safe graphics option below it, UEFI El Torito boot metadata is
+  present, and the VM/local ISO SHA256 hashes match.
+
 ## 0.1.17 - 2026-06-04
 
 ### Fixed
