@@ -74,7 +74,19 @@ rm -f /usr/share/applications/calamares.desktop.orig
 rm -f /usr/share/applications/calamares.desktop
 rm -f /usr/share/applications/install-debian.desktop
 rm -f /usr/share/applications/debian-installer.desktop
-rm -f /etc/xdg/autostart/calamares-desktop-icon.desktop
+
+install -d /etc/xdg/autostart
+cat > /etc/xdg/autostart/calamares-desktop-icon.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Add Calamares Desktop Icon
+Exec=/usr/lib/quailinux/clean-live-desktop
+NoDisplay=true
+Hidden=true
+X-GNOME-Autostart-enabled=false
+EOF
+chown root:root /etc/xdg/autostart/calamares-desktop-icon.desktop
+chmod 0644 /etc/xdg/autostart/calamares-desktop-icon.desktop
 
 cat > /usr/share/applications/calamares-install-debian.desktop <<'EOF'
 [Desktop Entry]

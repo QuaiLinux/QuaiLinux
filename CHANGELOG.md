@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.1.11 - 2026-06-04
+
+### Fixed
+
+- Added explicit ARM64 Calamares module-search paths so the live installer can
+  load `welcome`, `partition`, `users`, `packages`, and the other configured
+  modules.
+- Replaced Debian's Calamares desktop-icon autostart with a hidden QuaiLinux
+  override during the build, so Plasma does not recreate `Install Debian`.
+- Made the live desktop cleanup retry for several seconds and recreate only the
+  `Install QuaiLinux` launcher.
+
+### Verification
+
+- Parsed the Calamares settings, package module, and branding YAML files.
+- Ran shell syntax checks for the Calamares starter, live desktop cleanup,
+  Debian icon override, live permission repair, and branding hook.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Rebuilt the ARM64 live ISO and verified UEFI El Torito boot metadata, the
+  ARM64 Calamares module directory, `/usr/share/calamares/qml`, hidden Debian
+  Calamares autostart override, hidden Debian Calamares desktop-file override,
+  sudo/pkexec setuid ownership, and the QuaiLinux-only top-level GRUB menu.
+
 ## 0.1.10 - 2026-06-03
 
 ### Fixed

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Add Calamares Desktop Icon
+Exec=/usr/lib/quailinux/clean-live-desktop
+NoDisplay=true
+Hidden=true
+X-GNOME-Autostart-enabled=false
