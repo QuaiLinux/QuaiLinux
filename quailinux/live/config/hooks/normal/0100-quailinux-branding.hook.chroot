@@ -56,7 +56,10 @@ done
 [ -d /usr/share/backgrounds/quailinux ] && chown -R root:root /usr/share/backgrounds/quailinux
 [ -d /usr/share/wallpapers/QuaiLinux ] && chown -R root:root /usr/share/wallpapers/QuaiLinux
 [ -d /usr/share/plasma/desktoptheme ] && chown root:root /usr/share/plasma/desktoptheme/*/plasmarc 2>/dev/null || true
+[ -d /usr/share/plasma/look-and-feel ] && chown root:root /usr/share/plasma/look-and-feel/*/contents/defaults 2>/dev/null || true
 [ -d /usr/share/icons/hicolor/256x256/apps ] && chown root:root /usr/share/icons/hicolor/256x256/apps/quailinux*.png 2>/dev/null || true
+[ -f /etc/dbus-1/system.d/org.kde.kpmcore.helperinterface.quailinux.conf ] && chown root:root /etc/dbus-1/system.d/org.kde.kpmcore.helperinterface.quailinux.conf
+[ -f /usr/share/polkit-1/rules.d/49-quailinux-live.rules ] && chown root:root /usr/share/polkit-1/rules.d/49-quailinux-live.rules
 chown root:root /etc/profile.d/quailinux-live-installer.sh
 chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
 chmod 0755 /etc/sudoers.d

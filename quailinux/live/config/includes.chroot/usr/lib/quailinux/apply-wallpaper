@@ -13,12 +13,6 @@ mkdir -p "$(dirname "$marker")"
 
 applied=0
 
-if command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then
-    if plasma-apply-wallpaperimage "$wallpaper" >/dev/null 2>&1; then
-        applied=1
-    fi
-fi
-
 script='
 var allDesktops = desktops();
 for (i = 0; i < allDesktops.length; i++) {
@@ -30,12 +24,34 @@ for (i = 0; i < allDesktops.length; i++) {
 }
 '
 
-if command -v qdbus6 >/dev/null 2>&1; then
-    if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1; then
+for _try in 1 2 3 4 5 6 7 8 9 10; do
+    if command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then
+        if plasma-apply-wallpaperimage "$wallpaper" >/dev/null 2>&1; then
+            applied=1
+        fi
+    fi
+
+    if command -v qdbus6 >/dev/null 2>&1; then
+        if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1; then
+            applied=1
+            break
+        fi
+    elif command -v qdbus >/dev/null 2>&1; then
+        if qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1; then
+            applied=1
+            break
+        fi
+    fi
+
+    sleep 1
+done
+
+if [ "$applied" -eq 1 ] && command -v qdbus6 >/dev/null 2>&1; then
+    if qdbus6 org.kde.KWin /KWin reconfigure >/dev/null 2>&1; then
         applied=1
     fi
-elif command -v qdbus >/dev/null 2>&1; then
-    if qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1; then
+elif [ "$applied" -eq 1 ] && command -v qdbus >/dev/null 2>&1; then
+    if qdbus org.kde.KWin /KWin reconfigure >/dev/null 2>&1; then
         applied=1
     fi
 fi

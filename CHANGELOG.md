@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.15 - 2026-06-04
+
+### Fixed
+
+- Added live DBus and polkit overrides for the KPMCore partition helper so
+  Calamares can start `org.kde.kpmcore.helperinterface` and detect the target
+  disk that `lsblk` already sees.
+- Overrode KDE, Debian, Breeze, Breeze Dark, and Breeze Twilight look-and-feel
+  wallpaper defaults to use the `QuaiLinux` wallpaper package instead of
+  `Next` or `DebianTheme`.
+- Replaced the bundled wallpaper asset with the newer `wallpaperdark.png` from
+  Downloads, since `wallpaper.png` matched the old bundled file byte-for-byte.
+- Made the first-login wallpaper helper retry while Plasma starts so it does
+  not mark itself done before the desktop shell can accept the wallpaper change.
+
+### Verification
+
+- Ran shell syntax checks for the wallpaper helper, live polkit hook, and
+  branding hook.
+- Parsed the KPMCore DBus override XML.
+- Rebuilt the ARM64 ISO and verified the KPMCore DBus override, live polkit
+  rule, executable KPMCore helper, QuaiLinux look-and-feel wallpaper defaults,
+  updated wallpaper hash, empty `/proc` and `/sys` trees, and UEFI El Torito
+  boot metadata inside the rebuilt image.
+
 ## 0.1.14 - 2026-06-04
 
 ### Fixed
