@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.1.13 - 2026-06-04
+
+### Fixed
+
+- Forced Plasma's default wallpaper theme to the `QuaiLinux` wallpaper package
+  instead of KDE/Debian's `Next` wallpaper.
+- Updated the first-login wallpaper helper to write the Plasma wallpaper
+  package id and package preview path, with raw image application retained as a
+  fallback.
+- Added an explicit Calamares `partition.conf` for ARM64/EFI installs with
+  GPT defaults, manual partitioning enabled, LVM enabled, and live-media mount
+  exceptions.
+- Made the Calamares launcher log mounted filesystems, turn off swap, and
+  unmount only user-mounted target paths under `/media`, `/run/media`, and
+  `/mnt` before probing disks.
+
+### Verification
+
+- Parsed Calamares `settings.conf`, `packages.conf`, `partition.conf`, and
+  branding YAML.
+- Ran shell syntax checks for the Calamares starter, wallpaper helper, and
+  branding hook.
+- Rebuilt the ARM64 ISO and verified `partition.conf`, the storage preflight,
+  Plasma `QuaiLinux` wallpaper defaults, empty `/proc` and `/sys` trees, and
+  UEFI El Torito boot metadata inside the rebuilt image.
+
 ## 0.1.12 - 2026-06-04
 
 ### Fixed

@@ -55,6 +55,7 @@ done
 [ -d /usr/share/quailinux ] && chown -R root:root /usr/share/quailinux
 [ -d /usr/share/backgrounds/quailinux ] && chown -R root:root /usr/share/backgrounds/quailinux
 [ -d /usr/share/wallpapers/QuaiLinux ] && chown -R root:root /usr/share/wallpapers/QuaiLinux
+[ -d /usr/share/plasma/desktoptheme ] && chown root:root /usr/share/plasma/desktoptheme/*/plasmarc 2>/dev/null || true
 [ -d /usr/share/icons/hicolor/256x256/apps ] && chown root:root /usr/share/icons/hicolor/256x256/apps/quailinux*.png 2>/dev/null || true
 chown root:root /etc/profile.d/quailinux-live-installer.sh
 chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
@@ -62,9 +63,12 @@ chmod 0755 /etc/sudoers.d
 chmod 0440 /etc/sudoers.d/quailinux-live
 [ -f /usr/bin/sudo ] && chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
 [ -f /usr/bin/pkexec ] && chown root:root /usr/bin/pkexec && chmod 4755 /usr/bin/pkexec
-[ -f /etc/calamares/settings.conf ] && chown root:root /etc/calamares/settings.conf
+[ -d /etc/calamares ] && chown -R root:root /etc/calamares
 [ -f /usr/share/applications/quailinux-installer.desktop ] && chown root:root /usr/share/applications/quailinux-installer.desktop
 [ -d /root/.config ] && chown -R root:root /root/.config
+[ -f /etc/xdg/plasmarc ] && chown root:root /etc/xdg/plasmarc
+[ -f /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc ] && chown root:root /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
+[ -d /etc/skel/.config ] && chown -R root:root /etc/skel/.config
 
 mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -sf ../quailinux-live-permissions.service /etc/systemd/system/multi-user.target.wants/quailinux-live-permissions.service

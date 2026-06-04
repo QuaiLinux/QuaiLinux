@@ -8,8 +8,8 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/backgrounds/quailinux/wallpaper.png
-PreviewImage=file:///usr/share/backgrounds/quailinux/wallpaper.png
+Image=QuaiLinux
+PreviewImage=/usr/share/wallpapers/QuaiLinux/contents/images/3840x2160.png
 
 [Containments][1][General]
 ToolBoxButtonState=top

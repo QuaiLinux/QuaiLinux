@@ -23,6 +23,25 @@ fi
 
 {
     echo "--- storage preflight ---"
+    echo "mounts before cleanup:"
+    if command -v findmnt >/dev/null 2>&1; then
+        findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS 2>&1 || true
+    else
+        mount 2>&1 || true
+    fi
+    if command -v swapoff >/dev/null 2>&1; then
+        swapoff -a >/dev/null 2>&1 || true
+    fi
+    if command -v findmnt >/dev/null 2>&1; then
+        findmnt -rn -o TARGET | awk '
+            /^\/media\// || /^\/run\/media\// || /^\/mnt\// {
+                print
+            }
+        ' | sort -r | while IFS= read -r target; do
+            [ -n "$target" ] || continue
+            umount "$target" >/dev/null 2>&1 || umount -l "$target" >/dev/null 2>&1 || true
+        done
+    fi
     for module in virtio_blk virtio_pci virtio_scsi nvme sd_mod ahci uas usb_storage; do
         modprobe "$module" >/dev/null 2>&1 || true
     done
@@ -38,6 +57,10 @@ fi
     partprobe >/dev/null 2>&1 || true
     if command -v lsblk >/dev/null 2>&1; then
         lsblk -e7 -o NAME,TYPE,SIZE,MODEL,TRAN,RM,RO 2>&1 || true
+    fi
+    echo "mounts after cleanup:"
+    if command -v findmnt >/dev/null 2>&1; then
+        findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS 2>&1 || true
     fi
     echo "--- starting calamares ---"
 } >> "$log" 2>&1
