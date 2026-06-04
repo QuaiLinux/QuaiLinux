@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.14 - 2026-06-04
+
+### Fixed
+
+- Made the QuaiLinux installer launcher and Calamares starter choose a writable
+  log before writing, so stale `/tmp/quailinux-installer.log` permissions no
+  longer skip the storage preflight.
+- Made the root Calamares starter recreate `/tmp/quailinux-installer.log` as a
+  world-readable/writable live-session log before probing disks.
+- Redirected Calamares debug output from the root starter so the storage
+  preflight and Calamares partition diagnostics stay in the same `/tmp` log.
+
+### Verification
+
+- Ran shell syntax checks for the QuaiLinux installer launcher and Calamares
+  starter.
+- Parsed the Calamares YAML configuration files.
+- Rebuilt the ARM64 ISO and verified the safe logging scripts, empty `/proc`
+  and `/sys` trees, and UEFI El Torito boot metadata inside the rebuilt image.
+
 ## 0.1.13 - 2026-06-04
 
 ### Fixed

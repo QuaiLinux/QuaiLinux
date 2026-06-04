@@ -2,20 +2,27 @@
 set -u
 
 log=/tmp/quailinux-installer.log
-if ! touch "$log" 2>/dev/null || ! chmod 0666 "$log" 2>/dev/null; then
-    log="/tmp/quailinux-installer.$(id -u).log"
-    : > "$log" 2>/dev/null || log=/dev/null
-    chmod 0666 "$log" 2>/dev/null || true
+fallback_log="${XDG_RUNTIME_DIR:-/tmp}/quailinux-installer.$(id -u).log"
+if ! : >> "$log" 2>/dev/null; then
+    log="$fallback_log"
+    : >> "$log" 2>/dev/null || log=/dev/null
 fi
+chmod 0666 "$log" 2>/dev/null || true
 
-{
-    echo "=== QuaiLinux installer launcher ==="
-    date
-    echo "user=$(id -un) uid=$(id -u)"
-    echo "display=${DISPLAY-}"
-    echo "wayland=${WAYLAND_DISPLAY-}"
-    echo "xdg_runtime_dir=${XDG_RUNTIME_DIR-}"
-} >> "$log" 2>&1
+log_line() {
+    printf '%s\n' "$*" >> "$log" 2>/dev/null || true
+}
+
+log_command() {
+    "$@" >> "$log" 2>&1 || true
+}
+
+log_line "=== QuaiLinux installer launcher ==="
+log_command date
+log_line "user=$(id -un) uid=$(id -u)"
+log_line "display=${DISPLAY-}"
+log_line "wayland=${WAYLAND_DISPLAY-}"
+log_line "xdg_runtime_dir=${XDG_RUNTIME_DIR-}"
 
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
 export QT_QPA_PLATFORMTHEME=kde
@@ -37,6 +44,7 @@ run_installer() {
             XAUTHORITY="${XAUTHORITY-}" \
             XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR-}" \
             DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS-}" \
+            QUAILINUX_INSTALLER_LOG=/tmp/quailinux-installer.log \
             QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR-1}" \
             QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME-kde}" \
             XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP-KDE}" \
@@ -50,6 +58,7 @@ run_installer() {
             XAUTHORITY="${XAUTHORITY-}" \
             XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR-}" \
             DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS-}" \
+            QUAILINUX_INSTALLER_LOG=/tmp/quailinux-installer.log \
             QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR-1}" \
             QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME-kde}" \
             XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP-KDE}" \

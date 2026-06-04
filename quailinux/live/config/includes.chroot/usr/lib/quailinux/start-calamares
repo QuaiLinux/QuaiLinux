@@ -1,69 +1,81 @@
 #!/bin/sh
 set -u
 
-log=/tmp/quailinux-installer.log
-if ! touch "$log" 2>/dev/null || ! chmod 0666 "$log" 2>/dev/null; then
-    log="/tmp/quailinux-installer.$(id -u).log"
-    : > "$log" 2>/dev/null || log=/dev/null
-    chmod 0666 "$log" 2>/dev/null || true
+log="${QUAILINUX_INSTALLER_LOG:-/tmp/quailinux-installer.log}"
+fallback_log="${XDG_RUNTIME_DIR:-/tmp}/quailinux-installer.$(id -u).log"
+
+if [ "$(id -u)" -eq 0 ]; then
+    rm -f /tmp/quailinux-installer.log 2>/dev/null || true
+    install -m 0666 /dev/null /tmp/quailinux-installer.log 2>/dev/null || true
+    log=/tmp/quailinux-installer.log
 fi
 
-{
-    echo "=== QuaiLinux Calamares starter ==="
-    date
-    echo "user=$(id -un) uid=$(id -u)"
-    echo "display=${DISPLAY-}"
-    echo "wayland=${WAYLAND_DISPLAY-}"
-    echo "xdg_runtime_dir=${XDG_RUNTIME_DIR-}"
-} >> "$log" 2>&1
+if ! : >> "$log" 2>/dev/null; then
+    log="$fallback_log"
+    : >> "$log" 2>/dev/null || log=/dev/null
+fi
+chmod 0666 "$log" 2>/dev/null || true
+
+log_line() {
+    printf '%s\n' "$*" >> "$log" 2>/dev/null || true
+}
+
+log_command() {
+    "$@" >> "$log" 2>&1 || true
+}
+
+log_line "=== QuaiLinux Calamares starter ==="
+log_command date
+log_line "user=$(id -un) uid=$(id -u)"
+log_line "display=${DISPLAY-}"
+log_line "wayland=${WAYLAND_DISPLAY-}"
+log_line "xdg_runtime_dir=${XDG_RUNTIME_DIR-}"
 
 if [ "$(id -u)" -ne 0 ]; then
     exec quailinux-installer "$@"
 fi
 
-{
-    echo "--- storage preflight ---"
-    echo "mounts before cleanup:"
-    if command -v findmnt >/dev/null 2>&1; then
-        findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS 2>&1 || true
-    else
-        mount 2>&1 || true
-    fi
-    if command -v swapoff >/dev/null 2>&1; then
-        swapoff -a >/dev/null 2>&1 || true
-    fi
-    if command -v findmnt >/dev/null 2>&1; then
-        findmnt -rn -o TARGET | awk '
-            /^\/media\// || /^\/run\/media\// || /^\/mnt\// {
-                print
-            }
-        ' | sort -r | while IFS= read -r target; do
-            [ -n "$target" ] || continue
-            umount "$target" >/dev/null 2>&1 || umount -l "$target" >/dev/null 2>&1 || true
-        done
-    fi
-    for module in virtio_blk virtio_pci virtio_scsi nvme sd_mod ahci uas usb_storage; do
-        modprobe "$module" >/dev/null 2>&1 || true
+log_line "--- storage preflight ---"
+log_line "mounts before cleanup:"
+if command -v findmnt >/dev/null 2>&1; then
+    log_command findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS
+else
+    log_command mount
+fi
+if command -v swapoff >/dev/null 2>&1; then
+    swapoff -a >/dev/null 2>&1 || true
+fi
+if command -v findmnt >/dev/null 2>&1; then
+    findmnt -rn -o TARGET | awk '
+        /^\/media\// || /^\/run\/media\// || /^\/mnt\// {
+            print
+        }
+    ' | sort -r | while IFS= read -r target; do
+        [ -n "$target" ] || continue
+        umount "$target" >/dev/null 2>&1 || umount -l "$target" >/dev/null 2>&1 || true
     done
-    if command -v udevadm >/dev/null 2>&1; then
-        udevadm trigger --subsystem-match=block >/dev/null 2>&1 || true
-        udevadm settle --timeout=15 >/dev/null 2>&1 || true
-    fi
-    if command -v systemctl >/dev/null 2>&1; then
-        systemctl start udisks2.service >/dev/null 2>&1 || true
-    elif command -v service >/dev/null 2>&1; then
-        service udisks2 start >/dev/null 2>&1 || true
-    fi
-    partprobe >/dev/null 2>&1 || true
-    if command -v lsblk >/dev/null 2>&1; then
-        lsblk -e7 -o NAME,TYPE,SIZE,MODEL,TRAN,RM,RO 2>&1 || true
-    fi
-    echo "mounts after cleanup:"
-    if command -v findmnt >/dev/null 2>&1; then
-        findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS 2>&1 || true
-    fi
-    echo "--- starting calamares ---"
-} >> "$log" 2>&1
+fi
+for module in virtio_blk virtio_pci virtio_scsi nvme sd_mod ahci uas usb_storage; do
+    modprobe "$module" >/dev/null 2>&1 || true
+done
+if command -v udevadm >/dev/null 2>&1; then
+    udevadm trigger --subsystem-match=block >/dev/null 2>&1 || true
+    udevadm settle --timeout=15 >/dev/null 2>&1 || true
+fi
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl start udisks2.service >/dev/null 2>&1 || true
+elif command -v service >/dev/null 2>&1; then
+    service udisks2 start >/dev/null 2>&1 || true
+fi
+partprobe >/dev/null 2>&1 || true
+if command -v lsblk >/dev/null 2>&1; then
+    log_command lsblk -e7 -o NAME,TYPE,SIZE,MODEL,TRAN,RM,RO,MOUNTPOINTS
+fi
+log_line "mounts after cleanup:"
+if command -v findmnt >/dev/null 2>&1; then
+    log_command findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS
+fi
+log_line "--- starting calamares ---"
 
 if [ -e /etc/fstab ] && [ ! -e /etc/fstab.orig.quailinux-calamares ]; then
     mv /etc/fstab /etc/fstab.orig.quailinux-calamares
@@ -80,11 +92,12 @@ if [ ! -x /usr/bin/calamares ]; then
 fi
 
 if [ ! -r /etc/calamares/settings.conf ]; then
-    echo "missing /etc/calamares/settings.conf" >> "$log"
+    log_line "missing /etc/calamares/settings.conf"
     if command -v kdialog >/dev/null 2>&1; then
         kdialog --error "The QuaiLinux installer configuration is missing: /etc/calamares/settings.conf"
     fi
     exit 78
 fi
 
+exec >> "$log" 2>&1
 exec /usr/bin/calamares -d
