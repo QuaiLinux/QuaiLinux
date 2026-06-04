@@ -21,6 +21,27 @@ if [ "$(id -u)" -ne 0 ]; then
     exec quailinux-installer "$@"
 fi
 
+{
+    echo "--- storage preflight ---"
+    for module in virtio_blk virtio_pci virtio_scsi nvme sd_mod ahci uas usb_storage; do
+        modprobe "$module" >/dev/null 2>&1 || true
+    done
+    if command -v udevadm >/dev/null 2>&1; then
+        udevadm trigger --subsystem-match=block >/dev/null 2>&1 || true
+        udevadm settle --timeout=15 >/dev/null 2>&1 || true
+    fi
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl start udisks2.service >/dev/null 2>&1 || true
+    elif command -v service >/dev/null 2>&1; then
+        service udisks2 start >/dev/null 2>&1 || true
+    fi
+    partprobe >/dev/null 2>&1 || true
+    if command -v lsblk >/dev/null 2>&1; then
+        lsblk -e7 -o NAME,TYPE,SIZE,MODEL,TRAN,RM,RO 2>&1 || true
+    fi
+    echo "--- starting calamares ---"
+} >> "$log" 2>&1
+
 if [ -e /etc/fstab ] && [ ! -e /etc/fstab.orig.quailinux-calamares ]; then
     mv /etc/fstab /etc/fstab.orig.quailinux-calamares
 fi

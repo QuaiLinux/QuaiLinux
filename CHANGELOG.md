@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.12 - 2026-06-04
+
+### Fixed
+
+- Added a Calamares storage preflight that loads common VM/storage drivers,
+  triggers and settles udev, starts `udisks2`, probes partitions, and logs
+  `lsblk` before opening the installer.
+- Added common partitioning and filesystem tools to the live image and
+  installer package step so Calamares has the helpers needed for VM disks,
+  LVM/mapper devices, NTFS, exFAT, XFS, Btrfs, and encrypted installs.
+
+### Verification
+
+- Parsed the Calamares settings, package module, and branding YAML files.
+- Ran shell syntax checks for the Calamares starter and branding hook.
+- Ran Python syntax compilation for the QuaiLinux Welcome app.
+- Installed the added storage helpers into the ARM64 chroot, rebuilt the
+  SquashFS, and verified the preflight script, storage tools, empty `/proc` and
+  `/sys` trees, and UEFI El Torito boot metadata in the rebuilt ISO.
+
 ## 0.1.11 - 2026-06-04
 
 ### Fixed
