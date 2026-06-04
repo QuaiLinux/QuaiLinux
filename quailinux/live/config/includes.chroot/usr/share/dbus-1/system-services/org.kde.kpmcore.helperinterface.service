@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.kde.kpmcore.helperinterface
+Exec=/usr/bin/org.kde.kpmcore.helperinterface
+User=root

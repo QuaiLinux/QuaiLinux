@@ -71,6 +71,18 @@ partprobe >/dev/null 2>&1 || true
 if command -v lsblk >/dev/null 2>&1; then
     log_command lsblk -e7 -o NAME,TYPE,SIZE,MODEL,TRAN,RM,RO,MOUNTPOINTS
 fi
+if command -v dbus-send >/dev/null 2>&1; then
+    dbus-send --system --type=method_call --dest=org.freedesktop.DBus \
+        / org.freedesktop.DBus.ReloadConfig >/dev/null 2>&1 || true
+fi
+if command -v org.kde.kpmcore.helperinterface >/dev/null 2>&1; then
+    log_line "starting kpmcore helper alias"
+    org.kde.kpmcore.helperinterface >/tmp/quailinux-kpmcore-helper.log 2>&1 &
+    sleep 1
+    if command -v pgrep >/dev/null 2>&1; then
+        pgrep -af 'kpmcore_externalcommand|org.kde.kpmcore.helperinterface' >> "$log" 2>&1 || true
+    fi
+fi
 log_line "mounts after cleanup:"
 if command -v findmnt >/dev/null 2>&1; then
     log_command findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS

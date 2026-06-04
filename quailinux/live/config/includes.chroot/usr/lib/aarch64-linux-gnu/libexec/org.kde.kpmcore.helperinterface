@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/lib/aarch64-linux-gnu/libexec/kpmcore_externalcommand "$@"

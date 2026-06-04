@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.16 - 2026-06-04
+
+### Fixed
+
+- Added executable KPMCore helper aliases named
+  `org.kde.kpmcore.helperinterface` in `/usr/bin` and the ARM64 libexec
+  directory, matching the program name Calamares/KAuth tried to spawn.
+- Overrode the KPMCore DBus system service to launch the helper through the
+  executable alias.
+- Expanded the live DBus rule to allow KAuth traffic for the KPMCore helper.
+- Reloaded the system bus config and pre-started the KPMCore helper from the
+  Calamares starter before the partition module scans disks.
+
+### Verification
+
+- Rebuilt the ARM64 ISO and verified the helper aliases, DBus service override,
+  DBus policy, empty `/proc` and `/sys` trees, UEFI El Torito boot metadata,
+  and matching VM/local ISO SHA256 hash.
+
 ## 0.1.15 - 2026-06-04
 
 ### Fixed
