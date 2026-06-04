@@ -3,16 +3,24 @@ set -eu
 
 cd "$(dirname "$0")/../../.."
 
-if [ -f config/bootloaders/splash.png ] && [ -d binary/boot/grub ]; then
-    cp config/bootloaders/splash.png binary/boot/grub/splash.png
+if [ -d binary/boot/grub ]; then
+    rm -f binary/boot/grub/splash.png
+    cat > binary/boot/grub/theme.cfg <<'EOF'
+set color_normal=light-gray/black
+set color_highlight=white/black
+set menu_color_normal=light-gray/black
+set menu_color_highlight=black/light-gray
+EOF
 fi
 
 for cfg in binary/boot/grub/*.cfg binary/boot/grub/*/*.cfg
 do
     [ -f "$cfg" ] || continue
     sed -i \
-        -e 's/Live system (arm64)/Start QuaiLinux Live/g' \
-        -e 's/Live system (arm64 fail-safe mode)/Start QuaiLinux Live (safe graphics)/g' \
+        -e 's/Live system (arm64)/Try or Install QuaiLinux/g' \
+        -e 's/Live system (arm64 fail-safe mode)/Try or Install QuaiLinux (safe graphics)/g' \
+        -e 's/Start QuaiLinux Live (safe graphics)/Try or Install QuaiLinux (safe graphics)/g' \
+        -e 's/Start QuaiLinux Live/Try or Install QuaiLinux/g' \
         -e 's/Advanced install options \.\.\./Advanced QuaiLinux install options .../g' \
         -e 's/Graphical installer \.\.\./Graphical installer/g' \
         -e 's/Text installer \.\.\./Text installer/g' \

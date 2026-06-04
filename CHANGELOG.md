@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.17 - 2026-06-04
+
+### Fixed
+
+- Started the installer through KDE and systemd inhibitors so Plasma should not
+  blank, sleep, or lock the live session while Calamares is running.
+- Disabled X11 DPMS/screensaver blanking as a fallback before launching the
+  installer.
+- Simplified the ARM64 GRUB live menu to `Try or Install QuaiLinux` followed by
+  `Try or Install QuaiLinux (safe graphics)`.
+- Forced the GRUB menu theme to a plain black background instead of the old live
+  boot splash styling.
+
+### Verification
+
+- Ran shell syntax checks for the installer launcher, Calamares starter, and
+  boot-branding hook.
+- Rebuilt the ARM64 ISO and verified the compressed filesystem contains the
+  inhibitor commands, the ISO volume ID is `QUAILINUX_LIVE`, the GRUB menu has
+  the requested entries on a black theme, UEFI El Torito boot metadata is
+  present, and the VM/local ISO SHA256 hashes match.
+
 ## 0.1.16 - 2026-06-04
 
 ### Fixed

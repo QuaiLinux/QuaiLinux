@@ -32,13 +32,25 @@ if command -v xhost >/dev/null 2>&1; then
     xhost +si:localuser:root >/dev/null 2>&1 || true
 fi
 
+if command -v xset >/dev/null 2>&1 && [ -n "${DISPLAY-}" ]; then
+    xset s off -dpms s noblank >/dev/null 2>&1 || true
+fi
+
+run_with_desktop_inhibit() {
+    if [ "$(id -u)" -ne 0 ] && command -v kde-inhibit >/dev/null 2>&1; then
+        exec kde-inhibit --power --screenSaver --notifications "$@"
+    fi
+
+    exec "$@"
+}
+
 run_installer() {
     if [ "$(id -u)" -eq 0 ]; then
         exec /usr/lib/quailinux/start-calamares
     fi
 
     if command -v sudo >/dev/null 2>&1 && [ -u /usr/bin/sudo ]; then
-        exec sudo env \
+        run_with_desktop_inhibit sudo env \
             DISPLAY="${DISPLAY-}" \
             WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
             XAUTHORITY="${XAUTHORITY-}" \
@@ -52,7 +64,7 @@ run_installer() {
     fi
 
     if command -v pkexec >/dev/null 2>&1 && [ -u /usr/bin/pkexec ]; then
-        exec pkexec env \
+        run_with_desktop_inhibit pkexec env \
             DISPLAY="${DISPLAY-}" \
             WAYLAND_DISPLAY="${WAYLAND_DISPLAY-}" \
             XAUTHORITY="${XAUTHORITY-}" \

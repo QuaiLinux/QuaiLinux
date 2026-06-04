@@ -98,6 +98,10 @@ export QT_QPA_PLATFORMTHEME=kde
 export XDG_CURRENT_DESKTOP=KDE
 export CALAMARES_DISPLAY_NAME="QuaiLinux Installer"
 
+if command -v xset >/dev/null 2>&1 && [ -n "${DISPLAY-}" ]; then
+    xset s off -dpms s noblank >/dev/null 2>&1 || true
+fi
+
 if [ ! -x /usr/bin/calamares ]; then
     echo "calamares binary not found" >> "$log"
     exit 127
@@ -112,4 +116,13 @@ if [ ! -r /etc/calamares/settings.conf ]; then
 fi
 
 exec >> "$log" 2>&1
+if command -v systemd-inhibit >/dev/null 2>&1; then
+    exec systemd-inhibit \
+        --what=idle:sleep:handle-lid-switch \
+        --who=QuaiLinux \
+        --why="Installing QuaiLinux" \
+        --mode=block \
+        /usr/bin/calamares -d
+fi
+
 exec /usr/bin/calamares -d
