@@ -1,12 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
   <defs>
-    <linearGradient id="g" x1="12" y1="14" x2="84" y2="84" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#66e3ff"/>
-      <stop offset="1" stop-color="#6e6bff"/>
+    <linearGradient id="term" x1="15" y1="15" x2="80" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#79e2ff"/>
+      <stop offset=".55" stop-color="#4ba3ff"/>
+      <stop offset="1" stop-color="#8d72ff"/>
     </linearGradient>
   </defs>
-  <rect x="12" y="18" width="72" height="52" rx="10" fill="url(#g)"/>
-  <rect x="20" y="28" width="56" height="32" rx="4" fill="#101418"/>
-  <path d="M36 38l-8 8 8 8M60 38l8 8-8 8M52 34l-8 24" fill="none" stroke="#42d392" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M38 70h20l5 10H33z" fill="#101418"/>
+  <rect x="15" y="20" width="66" height="50" rx="10" fill="url(#term)"/>
+  <rect x="23" y="29" width="50" height="32" rx="5" fill="#11161c"/>
+  <path d="M37 39l-7 6 7 6M59 39l7 6-7 6M52 35l-8 22" fill="none" stroke="#7ee787" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M39 70h18l4 9H35z" fill="#11161c"/>
+  <rect x="31" y="79" width="34" height="5" rx="2.5" fill="#11161c"/>
 </svg>

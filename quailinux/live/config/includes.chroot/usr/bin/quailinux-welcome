@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import os
 import sys
+from collections import OrderedDict
 from pathlib import Path
 
 from PyQt6.QtCore import QProcess, Qt
@@ -29,101 +29,251 @@ DONE_FILE = Path.home() / ".config" / "quailinux" / "welcome-done"
 ICON_DIR = Path("/usr/share/quailinux/welcome/icons")
 INSTALL_HELPER = "/usr/lib/quailinux/welcome-install"
 
-CATEGORIES = {
-    "casual": {
-        "title": "Casual",
-        "icon": "casual.svg",
-        "packages": [
-            ("libreoffice", "Office suite"),
-            ("vlc", "Video and music"),
-            ("thunderbird", "Email"),
-            ("gwenview", "Images"),
-            ("elisa", "Music"),
-            ("kdeconnect", "Phone integration"),
-            ("kcalc", "Calculator"),
-            ("filelight", "Disk usage"),
-            ("skanlite", "Scanning"),
-            ("plasma-discover-backend-flatpak", "Flatpak support"),
-        ],
-    },
-    "gamers": {
-        "title": "For Gamers",
-        "icon": "gamers.svg",
-        "packages": [
-            ("steam-installer", "Steam"),
-            ("lutris", "Lutris"),
-            ("wine", "Wine"),
-            ("winetricks", "Winetricks"),
-            ("gamemode", "GameMode"),
-            ("mangohud", "MangoHud"),
-            ("vkbasalt", "vkBasalt"),
-            ("obs-studio", "OBS Studio"),
-            ("discord", "Discord"),
-            ("flatpak", "Flatpak"),
-            ("plasma-discover-backend-flatpak", "Discover Flatpak backend"),
-        ],
-    },
-    "artists": {
-        "title": "For Artists",
-        "icon": "artists.svg",
-        "packages": [
-            ("krita", "Krita"),
-            ("inkscape", "Inkscape"),
-            ("blender", "Blender"),
-            ("gimp", "GIMP"),
-            ("darktable", "Darktable"),
-            ("kdenlive", "Kdenlive"),
-            ("audacity", "Audacity"),
-            ("scribus", "Scribus"),
-            ("fontforge", "FontForge"),
-        ],
-    },
-    "programmers": {
-        "title": "For Programmers",
-        "icon": "programmers.svg",
-        "packages": [
-            ("code", "Visual Studio Code"),
-            ("intellij-idea-community", "IntelliJ IDEA Community"),
-            ("kdevelop", "KDevelop"),
-            ("kate", "Kate"),
-            ("geany", "Geany"),
-            ("git", "Git"),
-            ("build-essential", "Build essentials"),
-            ("cmake", "CMake"),
-            ("ninja-build", "Ninja"),
-            ("python3-pip", "Python pip"),
-            ("python3-venv", "Python venv"),
-            ("nodejs", "Node.js"),
-            ("npm", "npm"),
-            ("openjdk-21-jdk", "OpenJDK"),
-            ("docker.io", "Docker"),
-            ("podman", "Podman"),
-            ("virt-manager", "Virtual Machine Manager"),
-            ("qemu-system", "QEMU"),
-            ("flatpak", "Flatpak"),
-            ("plasma-discover-backend-flatpak", "Discover Flatpak backend"),
-        ],
-    },
-    "hackers": {
-        "title": "For Hackers",
-        "icon": "hackers.svg",
-        "packages": [
-            ("kali-linux-everything", "Kali everything"),
-            ("kali-linux-large", "Kali large"),
-            ("nmap", "Nmap"),
-            ("wireshark", "Wireshark"),
-            ("tcpdump", "tcpdump"),
-            ("john", "John"),
-            ("hydra", "Hydra"),
-            ("sqlmap", "sqlmap"),
-            ("nikto", "Nikto"),
-            ("dirb", "DIRB"),
-            ("aircrack-ng", "Aircrack-ng"),
-            ("metasploit-framework", "Metasploit"),
-            ("wordlists", "Wordlists"),
-        ],
-    },
-}
+CATEGORIES = OrderedDict(
+    [
+        (
+            "casual",
+            {
+                "title": "Casual",
+                "icon": "casual.svg",
+                "packages": [
+                    ("firefox-esr", "Firefox ESR"),
+                    ("libreoffice", "LibreOffice"),
+                    ("thunderbird", "Thunderbird"),
+                    ("vlc", "VLC"),
+                    ("mpv", "MPV"),
+                    ("gwenview", "Gwenview"),
+                    ("okular", "Okular"),
+                    ("spectacle", "Spectacle"),
+                    ("elisa", "Elisa"),
+                    ("kdeconnect", "KDE Connect"),
+                    ("kcalc", "KCalc"),
+                    ("filelight", "Filelight"),
+                    ("skanlite", "Skanlite"),
+                    ("simple-scan", "Simple Scan"),
+                    ("cups", "CUPS printing"),
+                    ("system-config-printer", "Printer settings"),
+                    ("printer-driver-all", "Printer drivers"),
+                    ("keepassxc", "KeePassXC"),
+                    ("nextcloud-desktop", "Nextcloud Desktop"),
+                    ("qbittorrent", "qBittorrent"),
+                    ("ark", "Ark"),
+                    ("p7zip-full", "7-Zip support"),
+                    ("unrar-free", "RAR extraction"),
+                    ("fonts-noto", "Noto fonts"),
+                    ("fonts-liberation", "Liberation fonts"),
+                    ("flatpak", "Flatpak"),
+                    ("plasma-discover-backend-flatpak", "Discover Flatpak backend"),
+                ],
+            },
+        ),
+        (
+            "gamers",
+            {
+                "title": "For Gamers",
+                "icon": "gamers.svg",
+                "packages": [
+                    ("steam-installer", "Steam"),
+                    ("lutris", "Lutris"),
+                    ("heroic", "Heroic Games Launcher"),
+                    ("wine", "Wine"),
+                    ("wine64", "Wine 64-bit"),
+                    ("winetricks", "Winetricks"),
+                    ("protontricks", "Protontricks"),
+                    ("gamemode", "GameMode"),
+                    ("mangohud", "MangoHud"),
+                    ("goverlay", "GOverlay"),
+                    ("vkbasalt", "vkBasalt"),
+                    ("gamescope", "Gamescope"),
+                    ("vulkan-tools", "Vulkan tools"),
+                    ("mesa-vulkan-drivers", "Mesa Vulkan drivers"),
+                    ("libvulkan1", "Vulkan runtime"),
+                    ("obs-studio", "OBS Studio"),
+                    ("discord", "Discord"),
+                    ("mumble", "Mumble"),
+                    ("retroarch", "RetroArch"),
+                    ("jstest-gtk", "Controller testing"),
+                    ("joystick", "Joystick utilities"),
+                    ("flatpak", "Flatpak"),
+                    ("plasma-discover-backend-flatpak", "Discover Flatpak backend"),
+                ],
+            },
+        ),
+        (
+            "artists",
+            {
+                "title": "For Artists",
+                "icon": "artists.svg",
+                "groups": OrderedDict(
+                    [
+                        (
+                            "2D",
+                            [
+                                ("krita", "Krita"),
+                                ("inkscape", "Inkscape"),
+                                ("gimp", "GIMP"),
+                                ("mypaint", "MyPaint"),
+                                ("digikam", "digiKam"),
+                                ("darktable", "Darktable"),
+                                ("rawtherapee", "RawTherapee"),
+                                ("scribus", "Scribus"),
+                                ("fontforge", "FontForge"),
+                                ("imagemagick", "ImageMagick"),
+                                ("gmic", "G'MIC"),
+                                ("colorhug-client", "ColorHug tools"),
+                            ],
+                        ),
+                        (
+                            "3D",
+                            [
+                                ("blender", "Blender"),
+                                ("freecad", "FreeCAD"),
+                                ("openscad", "OpenSCAD"),
+                                ("meshlab", "MeshLab"),
+                                ("prusa-slicer", "PrusaSlicer"),
+                                ("cura", "Cura"),
+                                ("wings3d", "Wings 3D"),
+                                ("povray", "POV-Ray"),
+                                ("kicad", "KiCad"),
+                                ("makehuman", "MakeHuman"),
+                            ],
+                        ),
+                        (
+                            "Music",
+                            [
+                                ("audacity", "Audacity"),
+                                ("ardour", "Ardour"),
+                                ("lmms", "LMMS"),
+                                ("hydrogen", "Hydrogen"),
+                                ("musescore3", "MuseScore"),
+                                ("fluidsynth", "FluidSynth"),
+                                ("qsynth", "QSynth"),
+                                ("jackd2", "JACK"),
+                                ("qjackctl", "QjackCtl"),
+                                ("carla", "Carla"),
+                                ("calf-plugins", "Calf plugins"),
+                                ("lsp-plugins", "LSP plugins"),
+                                ("sox", "SoX"),
+                            ],
+                        ),
+                    ]
+                ),
+            },
+        ),
+        (
+            "programmers",
+            {
+                "title": "For Programmers",
+                "icon": "programmers.svg",
+                "packages": [
+                    ("code", "Visual Studio Code"),
+                    ("codium", "VSCodium"),
+                    ("intellij-idea-community", "IntelliJ IDEA Community"),
+                    ("kdevelop", "KDevelop"),
+                    ("kate", "Kate"),
+                    ("geany", "Geany"),
+                    ("vim", "Vim"),
+                    ("neovim", "Neovim"),
+                    ("emacs", "Emacs"),
+                    ("git", "Git"),
+                    ("git-lfs", "Git LFS"),
+                    ("gh", "GitHub CLI"),
+                    ("build-essential", "Build essentials"),
+                    ("gdb", "GDB"),
+                    ("lldb", "LLDB"),
+                    ("clang", "Clang"),
+                    ("cmake", "CMake"),
+                    ("ninja-build", "Ninja"),
+                    ("pkg-config", "pkg-config"),
+                    ("shellcheck", "ShellCheck"),
+                    ("jq", "jq"),
+                    ("python3-pip", "Python pip"),
+                    ("python3-venv", "Python venv"),
+                    ("python3-dev", "Python headers"),
+                    ("nodejs", "Node.js"),
+                    ("npm", "npm"),
+                    ("golang", "Go"),
+                    ("rustc", "Rust compiler"),
+                    ("cargo", "Cargo"),
+                    ("openjdk-21-jdk", "OpenJDK"),
+                    ("maven", "Maven"),
+                    ("gradle", "Gradle"),
+                    ("docker.io", "Docker"),
+                    ("podman", "Podman"),
+                    ("buildah", "Buildah"),
+                    ("virt-manager", "Virtual Machine Manager"),
+                    ("qemu-system", "QEMU"),
+                    ("sqlitebrowser", "DB Browser for SQLite"),
+                    ("postgresql-client", "PostgreSQL client"),
+                    ("mariadb-client", "MariaDB client"),
+                    ("redis-tools", "Redis tools"),
+                ],
+            },
+        ),
+        (
+            "hackers",
+            {
+                "title": "For Hackers",
+                "icon": "hackers.svg",
+                "packages": [
+                    ("kali-linux-everything", "Kali everything"),
+                    ("kali-linux-large", "Kali large"),
+                    ("nmap", "Nmap"),
+                    ("masscan", "Masscan"),
+                    ("wireshark", "Wireshark"),
+                    ("tshark", "TShark"),
+                    ("tcpdump", "tcpdump"),
+                    ("netcat-openbsd", "Netcat"),
+                    ("socat", "socat"),
+                    ("dnsutils", "DNS utilities"),
+                    ("whois", "Whois"),
+                    ("traceroute", "Traceroute"),
+                    ("mtr-tiny", "MTR"),
+                    ("arp-scan", "ARP scan"),
+                    ("iperf3", "iperf3"),
+                    ("openssh-client", "OpenSSH client"),
+                    ("openssh-server", "OpenSSH server"),
+                    ("hydra", "Hydra"),
+                    ("john", "John"),
+                    ("hashcat", "Hashcat"),
+                    ("aircrack-ng", "Aircrack-ng"),
+                    ("reaver", "Reaver"),
+                    ("sqlmap", "sqlmap"),
+                    ("nikto", "Nikto"),
+                    ("dirb", "DIRB"),
+                    ("gobuster", "Gobuster"),
+                    ("ffuf", "ffuf"),
+                    ("radare2", "radare2"),
+                    ("gdb", "GDB"),
+                    ("binwalk", "Binwalk"),
+                    ("foremost", "Foremost"),
+                    ("libimage-exiftool-perl", "ExifTool"),
+                    ("steghide", "Steghide"),
+                    ("tor", "Tor"),
+                    ("proxychains4", "Proxychains"),
+                    ("wordlists", "Wordlists"),
+                    ("metasploit-framework", "Metasploit"),
+                ],
+            },
+        ),
+    ]
+)
+
+
+def package_rows(data, enabled_groups=None):
+    if "groups" not in data:
+        return data["packages"]
+    rows = []
+    seen = set()
+    for group_name, packages in data["groups"].items():
+        if enabled_groups is not None and group_name not in enabled_groups:
+            continue
+        for package, label in packages:
+            if package in seen:
+                continue
+            seen.add(package)
+            rows.append((package, label))
+    return rows
 
 
 class CategoryCard(QFrame):
@@ -133,34 +283,34 @@ class CategoryCard(QFrame):
         self._on_open = on_open
         self.setObjectName("CategoryCard")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setFixedSize(220, 220)
+        self.setFixedSize(210, 210)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.setToolTip(data["title"])
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(14)
+        layout.setContentsMargins(16, 18, 16, 18)
+        layout.setSpacing(12)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         icon = QLabel()
         pix = QPixmap(str(ICON_DIR / data["icon"]))
         icon.setPixmap(pix.scaled(88, 88, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-        icon.setFixedSize(96, 96)
+        icon.setFixedSize(92, 92)
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(icon, alignment=Qt.AlignmentFlag.AlignCenter)
 
         title = QLabel(data["title"])
         title.setObjectName("CardTitle")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setWordWrap(True)
+        title.setMinimumHeight(58)
         layout.addWidget(title)
 
-        button = QPushButton("Open")
-        button.setObjectName("CardButton")
-        button.clicked.connect(lambda: self._on_open(key))
-        layout.addWidget(button)
-
-    def mouseDoubleClickEvent(self, event):
-        self._on_open(self.key)
-        super().mouseDoubleClickEvent(event)
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._on_open(self.key)
+            return
+        super().mousePressEvent(event)
 
 
 class PackagePage(QWidget):
@@ -169,6 +319,7 @@ class PackagePage(QWidget):
         self.key = key
         self.data = data
         self.checks = []
+        self.group_checks = []
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(22, 22, 22, 22)
@@ -183,17 +334,24 @@ class PackagePage(QWidget):
         top.addWidget(title, 1)
         outer.addLayout(top)
 
-        listbox = QListWidget()
-        listbox.setObjectName("PackageList")
-        for package, label in data["packages"]:
-            item = QListWidgetItem()
-            checkbox = QCheckBox(f"{label}  ({package})")
-            checkbox.setChecked(True)
-            self.checks.append((checkbox, package))
-            item.setSizeHint(checkbox.sizeHint())
-            listbox.addItem(item)
-            listbox.setItemWidget(item, checkbox)
-        outer.addWidget(listbox, 1)
+        if "groups" in data:
+            group_row = QHBoxLayout()
+            group_label = QLabel("Merge:")
+            group_label.setObjectName("MergeLabel")
+            group_row.addWidget(group_label)
+            for group_name in data["groups"]:
+                checkbox = QCheckBox(group_name)
+                checkbox.setChecked(True)
+                checkbox.toggled.connect(self.rebuild_list)
+                self.group_checks.append((checkbox, group_name))
+                group_row.addWidget(checkbox)
+            group_row.addStretch()
+            outer.addLayout(group_row)
+
+        self.listbox = QListWidget()
+        self.listbox.setObjectName("PackageList")
+        outer.addWidget(self.listbox, 1)
+        self.rebuild_list()
 
         buttons = QHBoxLayout()
         select_all = QPushButton("Select all")
@@ -208,6 +366,24 @@ class PackagePage(QWidget):
         buttons.addStretch()
         buttons.addWidget(install)
         outer.addLayout(buttons)
+
+    def enabled_groups(self):
+        if not self.group_checks:
+            return None
+        return {group_name for checkbox, group_name in self.group_checks if checkbox.isChecked()}
+
+    def rebuild_list(self):
+        previously_selected = set(self.selected_packages()) if self.checks else None
+        self.checks = []
+        self.listbox.clear()
+        for package, label in package_rows(self.data, self.enabled_groups()):
+            item = QListWidgetItem()
+            checkbox = QCheckBox(f"{label}  ({package})")
+            checkbox.setChecked(True if previously_selected is None else package in previously_selected)
+            self.checks.append((checkbox, package))
+            item.setSizeHint(checkbox.sizeHint())
+            self.listbox.addItem(item)
+            self.listbox.setItemWidget(item, checkbox)
 
     def set_all(self, value):
         for checkbox, _package in self.checks:
@@ -291,9 +467,8 @@ class ProgressPage(QWidget):
         text = bytes(self.process.readAllStandardOutput()).decode("utf-8", "replace")
         for raw_line in text.splitlines():
             line = raw_line.strip()
-            if not line:
-                continue
-            self.handle_line(line)
+            if line:
+                self.handle_line(line)
 
     def handle_line(self, line):
         if line.startswith("STEP "):
@@ -336,11 +511,11 @@ class Welcome(QDialog):
         super().__init__()
         self.autostart = autostart
         self.setWindowTitle("QuaiLinux Welcome")
-        self.setMinimumSize(920, 720)
+        self.setMinimumSize(980, 680)
         self.setWindowIcon(QIcon("/usr/share/quailinux/artwork/icon.png"))
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(24, 24, 24, 24)
+        root.setContentsMargins(28, 24, 28, 24)
         root.setSpacing(18)
 
         header = QHBoxLayout()
@@ -357,10 +532,14 @@ class Welcome(QDialog):
 
         home = QWidget()
         grid = QGridLayout(home)
-        grid.setSpacing(18)
+        grid.setContentsMargins(0, 8, 0, 0)
+        grid.setHorizontalSpacing(26)
+        grid.setVerticalSpacing(22)
         for index, key in enumerate(CATEGORIES):
+            row = 0 if index < 3 else 1
+            column = index if index < 3 else index - 3
             card = CategoryCard(key, CATEGORIES[key], self.open_category)
-            grid.addWidget(card, index // 3, index % 3)
+            grid.addWidget(card, row, column, alignment=Qt.AlignmentFlag.AlignCenter)
         for column in range(3):
             grid.setColumnStretch(column, 1)
         for row in range(2):
@@ -381,18 +560,19 @@ class Welcome(QDialog):
                 background: palette(window);
             }
             QLabel#HeroTitle {
-                font-size: 30px;
+                font-size: 28px;
                 font-weight: 700;
             }
             QLabel#CardTitle {
-                font-size: 22px;
+                font-size: 20px;
                 font-weight: 700;
             }
             QLabel#PageTitle {
                 font-size: 24px;
                 font-weight: 700;
             }
-            QLabel#InstallStatus {
+            QLabel#InstallStatus,
+            QLabel#MergeLabel {
                 font-size: 14px;
             }
             QFrame#CategoryCard {
@@ -402,6 +582,7 @@ class Welcome(QDialog):
             }
             QFrame#CategoryCard:hover {
                 border: 1px solid palette(highlight);
+                background: palette(alternate-base);
             }
             QListWidget#PackageList,
             QListWidget#InstallLog {
@@ -415,7 +596,6 @@ class Welcome(QDialog):
                 padding-left: 14px;
                 padding-right: 14px;
             }
-            QPushButton#CardButton,
             QPushButton#PrimaryButton {
                 font-weight: 700;
             }

@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.24 - 2026-06-05
+
+### Changed
+
+- Made each QuaiLinux Welcome category tile directly clickable and removed the
+  redundant `Open` buttons.
+- Rebalanced the Welcome grid with smaller square tiles, less empty vertical
+  space, centered titles, and no clipped category text.
+- Replaced the category SVG icons with cleaner, more consistent artwork.
+- Expanded the Casual, Gamers, Artists, Programmers, and Hackers package lists.
+- Split the Artists setup into mergeable `2D`, `3D`, and `Music` groups so
+  users can install any combination as one merged package selection.
+
+### Fixed
+
+- Added `plasma-welcome` to the Calamares install-time removal list so KDE
+  Plasma Welcome does not compete with QuaiLinux Welcome on installed systems.
+
+### Verification
+
+- Ran Python syntax checks for `quailinux-welcome`.
+- Parsed the Calamares packages YAML.
+- Launched the rewritten Welcome app in the Debian ARM64 build chroot with
+  Qt's offscreen platform to catch runtime construction errors.
+
 ## 0.1.23 - 2026-06-05
 
 ### Fixed
