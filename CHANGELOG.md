@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.20 - 2026-06-05
+
+### Fixed
+
+- Corrected the Calamares sequence reference for the QuaiLinux final install
+  cleanup job from a literal module name to the `shellprocess` instance syntax,
+  so Calamares can load it as `shellprocess@quailinux-finish-install`.
+
+### Verification
+
+- Parsed the Calamares settings and finish-install module YAML.
+- Rebuilt the ARM64 ISO and verified the compressed filesystem contains
+  `shellprocess@quailinux-finish-install`, executable Welcome and
+  finish-install scripts, QuaiLinux OS identity, live runtime mount directories,
+  and no macOS resource-fork files.
+- Verified the ISO volume ID is `QUAILINUX_LIVE`, UEFI El Torito boot metadata
+  is present, the black GRUB menu still shows the requested entries, and the
+  VM/local ISO SHA256 hashes match.
+
 ## 0.1.19 - 2026-06-05
 
 ### Fixed
