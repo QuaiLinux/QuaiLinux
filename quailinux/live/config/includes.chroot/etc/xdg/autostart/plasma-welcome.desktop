@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Plasma Welcome
+Exec=false
+Hidden=true
+NoDisplay=true
+X-GNOME-Autostart-enabled=false

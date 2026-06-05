@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.1.22 - 2026-06-05
+
+### Changed
+
+- Reworked the QuaiLinux Welcome app into square category tiles with only the
+  main category names on the first screen.
+- Moved package selection into each category flow instead of showing "Choose
+  packages" buttons on the welcome grid.
+- Replaced terminal-backed `sudo apt` installs with an in-app progress view
+  driven by a dedicated privileged helper.
+- Added a narrowly scoped polkit rule so active sudo users can run the
+  QuaiLinux Welcome package helper without a password prompt.
+- Added system-wide autostart overrides for KDE Plasma Welcome so the
+  QuaiLinux Welcome app is the first-run experience.
+
+### Verification
+
+- Ran Python syntax checks for `quailinux-welcome`.
+- Ran shell syntax checks for the Welcome install helper, branding hook, and
+  finish-install hook.
+
 ## 0.1.21 - 2026-06-05
 
 ### Fixed

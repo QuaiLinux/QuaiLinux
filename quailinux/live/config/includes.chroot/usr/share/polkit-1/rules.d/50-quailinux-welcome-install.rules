@@ -1,0 +1,9 @@
+polkit.addRule(function(action, subject) {
+    if (action.id === "org.freedesktop.policykit.exec" &&
+        action.lookup("program") === "/usr/lib/quailinux/welcome-install" &&
+        subject.local &&
+        subject.active &&
+        subject.isInGroup("sudo")) {
+        return polkit.Result.YES;
+    }
+});
