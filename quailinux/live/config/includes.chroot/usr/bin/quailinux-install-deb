@@ -26,11 +26,11 @@ class DebInstaller(QDialog):
         self.process = None
         self.setWindowTitle("Install Debian Package")
         self.setWindowIcon(QIcon("package-install"))
-        self.setFixedSize(460, 260)
+        self.setFixedSize(460, 210)
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(18, 18, 18, 18)
-        root.setSpacing(12)
+        root.setContentsMargins(18, 14, 18, 14)
+        root.setSpacing(10)
 
         self.title = QLabel(f"Install {self.deb_path.name}?")
         self.title.setObjectName("Title")

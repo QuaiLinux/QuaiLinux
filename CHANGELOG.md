@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.27 - 2026-06-05
+
+### Changed
+
+- Reduced QuaiLinux Welcome side padding and centered the "Welcome to
+  QuaiLinux" header while leaving the rest of the layout unchanged.
+- Made the compact `.deb` installer shorter vertically now that the
+  explanatory text is gone.
+
+### Verification
+
+- Ran Python syntax checks for the Welcome and `.deb` installer GUIs.
+- Launched both PyQt GUIs in the Debian ARM64 build chroot with Qt's offscreen
+  platform to catch runtime construction errors.
+
 ## 0.1.26 - 2026-06-05
 
 ### Changed

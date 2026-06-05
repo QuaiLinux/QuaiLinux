@@ -552,12 +552,13 @@ class Welcome(QDialog):
         self.setWindowIcon(QIcon("/usr/share/quailinux/artwork/icon.png"))
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(28, 24, 28, 24)
+        root.setContentsMargins(18, 24, 18, 24)
         root.setSpacing(18)
 
         header = QHBoxLayout()
         title = QLabel("Welcome to QuaiLinux")
         title.setObjectName("HeroTitle")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         header.addWidget(title, 1)
         skip = QPushButton("Do not show again")
         skip.clicked.connect(self.mark_done_and_close)
