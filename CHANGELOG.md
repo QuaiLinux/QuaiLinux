@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.1.28 - 2026-06-05
+
+### Added
+
+- Added QuaiLinux Driver Manager as an installed-system Plasma-style app.
+- Added hardware scanning for common graphics, Wi-Fi, Bluetooth, printer,
+  scanner, and virtual-machine driver needs using PCI, USB, and DMI data.
+- Added a privileged driver helper that installs recommended Debian firmware,
+  driver, and support packages with apt while skipping unavailable packages.
+- Added a narrowly scoped polkit rule so active sudo users can run the driver
+  setup helper from the GUI without a password prompt.
+- Added `pciutils` and `usbutils` to the live and installed package set so the
+  driver manager can inspect hardware properly.
+
+### Verification
+
+- Ran Python syntax checks for the Driver Manager GUI.
+- Ran shell syntax checks for the driver helper, branding hook, and
+  finish-install hook.
+- Parsed the Calamares package module YAML.
+- Launched the Driver Manager in the Debian ARM64 build chroot with Qt's
+  offscreen platform to catch runtime construction errors.
+
 ## 0.1.27 - 2026-06-05
 
 ### Changed

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=QuaiLinux Driver Manager
+GenericName=Driver Manager
+Comment=Detect hardware and install recommended drivers and firmware
+Exec=quailinux-driver-manager
+Icon=preferences-system
+Terminal=false
+StartupNotify=true
+Categories=Qt;KDE;System;Settings;HardwareSettings;

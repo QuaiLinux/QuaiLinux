@@ -1,0 +1,361 @@
+#!/usr/bin/env python3
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+from PyQt6.QtCore import QProcess, Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QMainWindow,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
+
+
+HELPER = "/usr/lib/quailinux/driver-manager-helper"
+
+RULES = [
+    {
+        "name": "NVIDIA graphics",
+        "patterns": [r"nvidia"],
+        "packages": ["nvidia-driver", "firmware-misc-nonfree", "mesa-utils", "vulkan-tools"],
+        "reason": "NVIDIA GPU detected",
+    },
+    {
+        "name": "AMD graphics",
+        "patterns": [r"amd/ati", r"advanced micro devices.*vga", r"radeon"],
+        "packages": ["firmware-amd-graphics", "mesa-vulkan-drivers", "mesa-va-drivers", "libgl1-mesa-dri", "vulkan-tools"],
+        "reason": "AMD GPU detected",
+    },
+    {
+        "name": "Intel graphics",
+        "patterns": [r"intel corporation.*(vga|graphics|display)"],
+        "packages": ["intel-media-va-driver", "mesa-vulkan-drivers", "mesa-va-drivers", "libgl1-mesa-dri", "vulkan-tools"],
+        "reason": "Intel graphics detected",
+    },
+    {
+        "name": "Intel Wi-Fi",
+        "patterns": [r"intel corporation.*(wireless|wi-fi|wifi|network connection)"],
+        "packages": ["firmware-iwlwifi", "wireless-tools", "wpasupplicant"],
+        "reason": "Intel wireless adapter detected",
+    },
+    {
+        "name": "Realtek networking",
+        "patterns": [r"realtek.*(network|ethernet|wireless|wi-fi|wifi|rtl)"],
+        "packages": ["firmware-realtek", "r8168-dkms", "wireless-tools", "wpasupplicant"],
+        "reason": "Realtek network adapter detected",
+    },
+    {
+        "name": "Broadcom Wi-Fi",
+        "patterns": [r"broadcom.*(network|wireless|wi-fi|wifi|bcm)"],
+        "packages": ["firmware-brcm80211", "broadcom-sta-dkms", "wireless-tools", "wpasupplicant"],
+        "reason": "Broadcom wireless adapter detected",
+    },
+    {
+        "name": "Atheros / Qualcomm Wi-Fi",
+        "patterns": [r"(atheros|qualcomm).*wireless", r"(atheros|qualcomm).*wi-fi", r"(atheros|qualcomm).*wifi"],
+        "packages": ["firmware-atheros", "wireless-tools", "wpasupplicant"],
+        "reason": "Atheros or Qualcomm wireless adapter detected",
+    },
+    {
+        "name": "MediaTek wireless",
+        "patterns": [r"mediatek.*(wireless|wi-fi|wifi|network)"],
+        "packages": ["firmware-misc-nonfree", "wireless-tools", "wpasupplicant"],
+        "reason": "MediaTek wireless adapter detected",
+    },
+    {
+        "name": "Bluetooth support",
+        "patterns": [r"bluetooth"],
+        "packages": ["bluez", "bluedevil", "firmware-misc-nonfree"],
+        "reason": "Bluetooth hardware detected",
+    },
+    {
+        "name": "Printers and scanners",
+        "patterns": [r"printer", r"scanner", r"canon", r"epson", r"brother", r"hewlett-packard", r"\bhp\b"],
+        "packages": ["cups", "system-config-printer", "printer-driver-all", "sane-airscan", "simple-scan"],
+        "reason": "Printer or scanner hardware detected",
+    },
+    {
+        "name": "QEMU / VirtIO guest tools",
+        "patterns": [r"qemu", r"virtio", r"kvm"],
+        "packages": ["qemu-guest-agent", "spice-vdagent"],
+        "reason": "QEMU or VirtIO environment detected",
+    },
+    {
+        "name": "VMware guest tools",
+        "patterns": [r"vmware"],
+        "packages": ["open-vm-tools-desktop"],
+        "reason": "VMware environment detected",
+    },
+    {
+        "name": "VirtualBox guest tools",
+        "patterns": [r"virtualbox"],
+        "packages": ["virtualbox-guest-utils", "virtualbox-guest-x11"],
+        "reason": "VirtualBox environment detected",
+    },
+]
+
+BASE_PACKAGES = ["linux-firmware", "firmware-linux", "firmware-linux-free", "firmware-linux-nonfree"]
+
+
+def run_text(command):
+    try:
+        return subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=8).stdout
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return ""
+
+
+def read_text(path):
+    try:
+        return Path(path).read_text(errors="replace")
+    except OSError:
+        return ""
+
+
+def hardware_text():
+    parts = [
+        run_text(["lspci", "-nnk"]),
+        run_text(["lsusb"]),
+        read_text("/sys/class/dmi/id/sys_vendor"),
+        read_text("/sys/class/dmi/id/product_name"),
+        read_text("/sys/class/dmi/id/product_version"),
+    ]
+    return "\n".join(parts)
+
+
+def scan_matches():
+    text = hardware_text()
+    lower = text.lower()
+    matches = []
+    seen = set()
+    for rule in RULES:
+        if any(re.search(pattern, lower, re.IGNORECASE) for pattern in rule["patterns"]):
+            packages = []
+            for package in rule["packages"]:
+                if package not in seen:
+                    packages.append(package)
+                    seen.add(package)
+            matches.append({**rule, "packages": packages})
+    return matches
+
+
+class DriverCard(QFrame):
+    def __init__(self, match):
+        super().__init__()
+        self.setObjectName("DriverCard")
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(14, 12, 14, 12)
+        layout.setSpacing(6)
+
+        title = QLabel(match["name"])
+        title.setObjectName("CardTitle")
+        layout.addWidget(title)
+
+        reason = QLabel(match["reason"])
+        reason.setObjectName("CardReason")
+        reason.setWordWrap(True)
+        layout.addWidget(reason)
+
+        packages = QLabel(", ".join(match["packages"]))
+        packages.setObjectName("PackageText")
+        packages.setWordWrap(True)
+        layout.addWidget(packages)
+
+
+class DriverManager(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.process = None
+        self.matches = []
+        self.setWindowTitle("QuaiLinux Driver Manager")
+        self.setWindowIcon(QIcon("preferences-system"))
+        self.setMinimumSize(760, 560)
+
+        root = QWidget()
+        self.setCentralWidget(root)
+        layout = QVBoxLayout(root)
+        layout.setContentsMargins(22, 20, 22, 20)
+        layout.setSpacing(14)
+
+        header = QHBoxLayout()
+        title = QLabel("Driver Manager")
+        title.setObjectName("HeroTitle")
+        header.addWidget(title, 1)
+        self.scan_button = QPushButton("Scan")
+        self.scan_button.clicked.connect(self.scan)
+        header.addWidget(self.scan_button)
+        layout.addLayout(header)
+
+        self.summary = QLabel("Scan your computer for hardware that may need extra drivers or firmware.")
+        self.summary.setWordWrap(True)
+        layout.addWidget(self.summary)
+
+        self.list = QListWidget()
+        self.list.setObjectName("DriverList")
+        layout.addWidget(self.list, 1)
+
+        self.progress = QProgressBar()
+        self.progress.setRange(0, 0)
+        self.progress.hide()
+        layout.addWidget(self.progress)
+
+        self.log = QListWidget()
+        self.log.setObjectName("InstallLog")
+        self.log.hide()
+        layout.addWidget(self.log, 1)
+
+        bottom = QHBoxLayout()
+        self.install_button = QPushButton("Set Up Drivers")
+        self.install_button.setObjectName("PrimaryButton")
+        self.install_button.setEnabled(False)
+        self.install_button.clicked.connect(self.install)
+        bottom.addStretch()
+        bottom.addWidget(self.install_button)
+        layout.addLayout(bottom)
+
+        self.setStyleSheet("""
+            QMainWindow {
+                background: palette(window);
+            }
+            QLabel#HeroTitle {
+                font-size: 28px;
+                font-weight: 700;
+            }
+            QLabel#CardTitle {
+                font-size: 17px;
+                font-weight: 700;
+            }
+            QLabel#CardReason,
+            QLabel#PackageText {
+                color: palette(mid);
+            }
+            QFrame#DriverCard {
+                border: 1px solid palette(midlight);
+                border-radius: 8px;
+                background: palette(base);
+            }
+            QListWidget#DriverList,
+            QListWidget#InstallLog {
+                border: 1px solid palette(midlight);
+                border-radius: 8px;
+                background: palette(base);
+                padding: 8px;
+            }
+            QPushButton {
+                min-height: 34px;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+            QPushButton#PrimaryButton {
+                font-weight: 700;
+            }
+        """)
+        self.scan()
+
+    def scan(self):
+        self.matches = scan_matches()
+        self.list.clear()
+        self.log.hide()
+        self.progress.hide()
+        if not self.matches:
+            self.summary.setText("No obvious missing driver setup was detected. Your hardware already looks ready.")
+            self.install_button.setEnabled(False)
+            return
+        self.summary.setText(f"Found {len(self.matches)} driver setup suggestion(s). Review them, then set them up automatically.")
+        for match in self.matches:
+            item = QListWidgetItem()
+            card = DriverCard(match)
+            item.setSizeHint(card.sizeHint())
+            self.list.addItem(item)
+            self.list.setItemWidget(item, card)
+        self.install_button.setEnabled(True)
+
+    def packages(self):
+        packages = []
+        seen = set()
+        for package in BASE_PACKAGES:
+            if package not in seen:
+                packages.append(package)
+                seen.add(package)
+        for match in self.matches:
+            for package in match["packages"]:
+                if package not in seen:
+                    packages.append(package)
+                    seen.add(package)
+        return packages
+
+    def install(self):
+        packages = self.packages()
+        if not packages:
+            QMessageBox.information(self, "No drivers needed", "No driver setup is needed right now.")
+            return
+        self.install_button.setEnabled(False)
+        self.scan_button.setEnabled(False)
+        self.progress.show()
+        self.log.clear()
+        self.log.show()
+        self.summary.setText("Setting up drivers and firmware...")
+
+        self.process = QProcess(self)
+        self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
+        self.process.readyReadStandardOutput.connect(self.read_output)
+        self.process.finished.connect(self.finished)
+        self.process.start("pkexec", [HELPER, *packages])
+        if not self.process.waitForStarted(3000):
+            self.summary.setText("Could not start the driver setup helper.")
+            self.install_button.setEnabled(True)
+            self.scan_button.setEnabled(True)
+
+    def read_output(self):
+        if not self.process:
+            return
+        text = bytes(self.process.readAllStandardOutput()).decode("utf-8", "replace")
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            if line.startswith("STEP "):
+                self.summary.setText(line[5:])
+                self.log.addItem(line[5:])
+            elif line.startswith("DONE "):
+                self.log.addItem("Installed: " + line[5:])
+            elif line.startswith("SKIP "):
+                self.log.addItem("Skipped: " + line[5:])
+            elif line.startswith("ERROR "):
+                self.log.addItem("Failed: " + line[6:])
+            elif line.startswith("FINISHED"):
+                self.summary.setText("Driver setup finished. Restart if a driver asks for it.")
+            else:
+                self.log.addItem(line)
+            self.log.scrollToBottom()
+
+    def finished(self, exit_code, _status):
+        self.progress.hide()
+        self.scan_button.setEnabled(True)
+        self.install_button.setEnabled(True)
+        if exit_code == 0:
+            self.summary.setText("Driver setup finished. Restart your computer if new graphics, Wi-Fi, or kernel drivers were installed.")
+        else:
+            self.summary.setText("Driver setup finished with errors. Check the log for skipped or failed packages.")
+
+
+def main():
+    app = QApplication(sys.argv)
+    window = DriverManager()
+    window.show()
+    return app.exec()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

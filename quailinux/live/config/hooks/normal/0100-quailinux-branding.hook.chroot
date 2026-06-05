@@ -39,6 +39,7 @@ for file in \
     /usr/bin/add-calamares-desktop-icon \
     /usr/bin/quailinux-welcome \
     /usr/bin/quailinux-install-deb \
+    /usr/bin/quailinux-driver-manager \
     /usr/bin/neofetch \
     /usr/bin/org.kde.kpmcore.helperinterface \
     /usr/lib/quailinux/start-calamares \
@@ -47,6 +48,7 @@ for file in \
     /usr/lib/quailinux/finish-install \
     /usr/lib/quailinux/welcome-install \
     /usr/lib/quailinux/install-deb-helper \
+    /usr/lib/quailinux/driver-manager-helper \
     /usr/lib/quailinux/clean-live-desktop \
     /usr/lib/aarch64-linux-gnu/libexec/org.kde.kpmcore.helperinterface
 do
@@ -68,6 +70,7 @@ done
 [ -f /usr/share/polkit-1/rules.d/49-quailinux-live.rules ] && chown root:root /usr/share/polkit-1/rules.d/49-quailinux-live.rules
 [ -f /usr/share/polkit-1/rules.d/50-quailinux-welcome-install.rules ] && chown root:root /usr/share/polkit-1/rules.d/50-quailinux-welcome-install.rules
 [ -f /usr/share/polkit-1/rules.d/51-quailinux-deb-install.rules ] && chown root:root /usr/share/polkit-1/rules.d/51-quailinux-deb-install.rules
+[ -f /usr/share/polkit-1/rules.d/52-quailinux-driver-manager.rules ] && chown root:root /usr/share/polkit-1/rules.d/52-quailinux-driver-manager.rules
 [ -f /etc/profile.d/quailinux-live-installer.sh ] && chown root:root /etc/profile.d/quailinux-live-installer.sh
 chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
 chmod 0755 /etc/sudoers.d
@@ -77,6 +80,7 @@ chmod 0440 /etc/sudoers.d/quailinux-live
 [ -d /etc/calamares ] && chown -R root:root /etc/calamares
 [ -f /usr/share/applications/quailinux-installer.desktop ] && chown root:root /usr/share/applications/quailinux-installer.desktop
 [ -f /usr/share/applications/quailinux-welcome.desktop ] && chown root:root /usr/share/applications/quailinux-welcome.desktop
+[ -f /usr/share/applications/quailinux-driver-manager.desktop ] && chown root:root /usr/share/applications/quailinux-driver-manager.desktop
 [ -f /etc/xdg/autostart/quailinux-welcome.desktop ] && chown root:root /etc/xdg/autostart/quailinux-welcome.desktop
 [ -f /etc/xdg/autostart/org.kde.plasma-welcome.desktop ] && chown root:root /etc/xdg/autostart/org.kde.plasma-welcome.desktop
 [ -f /etc/xdg/autostart/plasma-welcome.desktop ] && chown root:root /etc/xdg/autostart/plasma-welcome.desktop

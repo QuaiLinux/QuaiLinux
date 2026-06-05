@@ -1,0 +1,54 @@
+#!/bin/sh
+set -u
+
+export DEBIAN_FRONTEND=noninteractive
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo "ERROR This driver helper must run as root."
+    exit 1
+fi
+
+if [ "$#" -eq 0 ]; then
+    echo "ERROR No driver packages were requested."
+    exit 2
+fi
+
+for package in "$@"; do
+    case "$package" in
+        *[!A-Za-z0-9+._:-]*|"")
+            echo "ERROR Refusing unsafe package name: $package"
+            exit 2
+            ;;
+    esac
+done
+
+echo "STEP Updating package lists"
+apt-get update -y || true
+
+echo "STEP Repairing package state"
+dpkg --configure -a || true
+apt-get -f install -y || true
+
+for package in "$@"; do
+    echo "STEP Checking $package"
+    if ! apt-cache show "$package" >/dev/null 2>&1; then
+        echo "SKIP $package is not available in the configured repositories"
+        continue
+    fi
+
+    echo "STEP Installing $package"
+    if apt-get install -y "$package"; then
+        echo "DONE $package"
+    else
+        echo "ERROR $package"
+        echo "STEP Trying dependency repair after $package"
+        apt-get -f install -y || true
+        dpkg --configure -a || true
+    fi
+done
+
+echo "STEP Final package repair"
+apt-get -f install -y || true
+dpkg --configure -a || true
+
+echo "FINISHED"

@@ -49,6 +49,8 @@ plasma-nm
 sudo
 curl
 ca-certificates
+pciutils
+usbutils
 firmware-linux
 firmware-linux-free
 firmware-linux-nonfree
