@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.26 - 2026-06-05
+
+### Changed
+
+- Made the QuaiLinux Welcome completion Done button close the app after a
+  preset finishes installing.
+- Removed the explanatory repair text from the compact `.deb` installer
+  confirmation dialog.
+
+### Verification
+
+- Ran Python syntax checks for the Welcome and `.deb` installer GUIs.
+- Launched both PyQt GUIs in the Debian ARM64 build chroot with Qt's offscreen
+  platform to catch runtime construction errors.
+
 ## 0.1.25 - 2026-06-05
 
 ### Changed

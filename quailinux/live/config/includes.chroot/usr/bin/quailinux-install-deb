@@ -38,10 +38,11 @@ class DebInstaller(QDialog):
         self.title.setWordWrap(True)
         root.addWidget(self.title)
 
-        self.status = QLabel("QuaiLinux will install the package and try to repair missing dependencies automatically.")
+        self.status = QLabel("")
         self.status.setObjectName("Status")
         self.status.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status.setWordWrap(True)
+        self.status.hide()
         root.addWidget(self.status)
 
         self.progress = QProgressBar()
@@ -110,6 +111,7 @@ class DebInstaller(QDialog):
         self.install.setEnabled(False)
         self.title.setText(f"Installing {self.deb_path.name}")
         self.status.setText("Preparing...")
+        self.status.show()
         self.progress.show()
         self.log.show()
 

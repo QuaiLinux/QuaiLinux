@@ -450,7 +450,7 @@ class ProgressPage(QWidget):
         self.close_button = QPushButton("Done")
         self.close_button.setEnabled(False)
         self.close_button.setObjectName("DoneButton")
-        self.close_button.clicked.connect(go_home)
+        self.close_button.clicked.connect(self.close_welcome)
         bottom.addStretch()
         bottom.addWidget(self.close_button)
         outer.addLayout(bottom)
@@ -538,6 +538,9 @@ class ProgressPage(QWidget):
             self.close_button.setText("Done")
         else:
             self.status.setText("Package installation stopped before finishing.")
+
+    def close_welcome(self):
+        self.window().accept()
 
 
 class Welcome(QDialog):
