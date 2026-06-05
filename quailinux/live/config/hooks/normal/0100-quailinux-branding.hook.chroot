@@ -46,6 +46,7 @@ for file in \
     /usr/lib/quailinux/fix-live-permissions \
     /usr/lib/quailinux/finish-install \
     /usr/lib/quailinux/welcome-install \
+    /usr/lib/quailinux/install-deb-helper \
     /usr/lib/quailinux/clean-live-desktop \
     /usr/lib/aarch64-linux-gnu/libexec/org.kde.kpmcore.helperinterface
 do
@@ -66,6 +67,7 @@ done
 [ -f /usr/share/dbus-1/system-services/org.kde.kpmcore.helperinterface.service ] && chown root:root /usr/share/dbus-1/system-services/org.kde.kpmcore.helperinterface.service
 [ -f /usr/share/polkit-1/rules.d/49-quailinux-live.rules ] && chown root:root /usr/share/polkit-1/rules.d/49-quailinux-live.rules
 [ -f /usr/share/polkit-1/rules.d/50-quailinux-welcome-install.rules ] && chown root:root /usr/share/polkit-1/rules.d/50-quailinux-welcome-install.rules
+[ -f /usr/share/polkit-1/rules.d/51-quailinux-deb-install.rules ] && chown root:root /usr/share/polkit-1/rules.d/51-quailinux-deb-install.rules
 [ -f /etc/profile.d/quailinux-live-installer.sh ] && chown root:root /etc/profile.d/quailinux-live-installer.sh
 chown root:root /etc/sudoers.d /etc/sudoers.d/quailinux-live
 chmod 0755 /etc/sudoers.d

@@ -1,50 +1,184 @@
-#!/bin/sh
-set -u
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
 
-if [ "$#" -lt 1 ]; then
-    if command -v kdialog >/dev/null 2>&1; then
-        kdialog --error "Choose a .deb package to install."
-    else
-        printf '%s\n' "Choose a .deb package to install." >&2
-    fi
-    exit 2
-fi
+from PyQt6.QtCore import QProcess, Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QProgressBar,
+    QPushButton,
+    QVBoxLayout,
+)
 
-deb=$1
-case "$deb" in
-    *.deb) ;;
-    *)
-        if command -v kdialog >/dev/null 2>&1; then
-            kdialog --error "This is not a .deb package: $deb"
-        fi
-        exit 2
-        ;;
-esac
 
-if [ ! -r "$deb" ]; then
-    if command -v kdialog >/dev/null 2>&1; then
-        kdialog --error "Cannot read package: $deb"
-    fi
-    exit 1
-fi
+HELPER = "/usr/lib/quailinux/install-deb-helper"
 
-deb=$(readlink -f "$deb")
 
-cmd='set -e
-echo "Installing Debian package:"
-printf "  %s\n\n" "$1"
-sudo apt update
-sudo apt install -y "$1"
-echo
-echo "Done. Press Enter to close."
-read _'
+class DebInstaller(QDialog):
+    def __init__(self, deb_path):
+        super().__init__()
+        self.deb_path = Path(deb_path).resolve()
+        self.process = None
+        self.setWindowTitle("Install Debian Package")
+        self.setWindowIcon(QIcon("package-install"))
+        self.setFixedSize(460, 260)
 
-if command -v konsole >/dev/null 2>&1; then
-    exec konsole --hold -e sh -c "$cmd" quailinux-install-deb "$deb"
-fi
+        root = QVBoxLayout(self)
+        root.setContentsMargins(18, 18, 18, 18)
+        root.setSpacing(12)
 
-if command -v x-terminal-emulator >/dev/null 2>&1; then
-    exec x-terminal-emulator -e sh -c "$cmd" quailinux-install-deb "$deb"
-fi
+        self.title = QLabel(f"Install {self.deb_path.name}?")
+        self.title.setObjectName("Title")
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.title.setWordWrap(True)
+        root.addWidget(self.title)
 
-exec sh -c "$cmd" quailinux-install-deb "$deb"
+        self.status = QLabel("QuaiLinux will install the package and try to repair missing dependencies automatically.")
+        self.status.setObjectName("Status")
+        self.status.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.status.setWordWrap(True)
+        root.addWidget(self.status)
+
+        self.progress = QProgressBar()
+        self.progress.setRange(0, 0)
+        self.progress.hide()
+        root.addWidget(self.progress)
+
+        self.log = QListWidget()
+        self.log.setObjectName("InstallLog")
+        self.log.hide()
+        root.addWidget(self.log, 1)
+
+        self.done_panel = QLabel("&#10003;<br/>Package installed.")
+        self.done_panel.setObjectName("DonePanel")
+        self.done_panel.setTextFormat(Qt.TextFormat.RichText)
+        self.done_panel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.done_panel.hide()
+        root.addWidget(self.done_panel, 1)
+
+        buttons = QHBoxLayout()
+        buttons.addStretch()
+        self.cancel = QPushButton("Cancel")
+        self.cancel.clicked.connect(self.reject)
+        self.install = QPushButton("Yes")
+        self.install.setObjectName("PrimaryButton")
+        self.install.clicked.connect(self.install_deb)
+        buttons.addWidget(self.cancel)
+        buttons.addWidget(self.install)
+        root.addLayout(buttons)
+
+        self.setStyleSheet("""
+            QDialog {
+                background: palette(window);
+            }
+            QLabel#Title {
+                font-size: 18px;
+                font-weight: 700;
+            }
+            QLabel#Status {
+                color: palette(mid);
+            }
+            QLabel#DonePanel {
+                color: #42d392;
+                font-size: 24px;
+                font-weight: 700;
+            }
+            QListWidget#InstallLog {
+                border: 1px solid palette(midlight);
+                border-radius: 8px;
+                background: palette(base);
+                padding: 6px;
+            }
+            QPushButton {
+                min-height: 34px;
+                min-width: 92px;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+            QPushButton#PrimaryButton {
+                font-weight: 700;
+            }
+        """)
+
+    def install_deb(self):
+        self.cancel.setEnabled(False)
+        self.install.setEnabled(False)
+        self.title.setText(f"Installing {self.deb_path.name}")
+        self.status.setText("Preparing...")
+        self.progress.show()
+        self.log.show()
+
+        self.process = QProcess(self)
+        self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
+        self.process.readyReadStandardOutput.connect(self.read_output)
+        self.process.finished.connect(self.finished)
+        self.process.start("pkexec", [HELPER, str(self.deb_path)])
+        if not self.process.waitForStarted(3000):
+            self.status.setText("Could not start the installer helper.")
+            self.cancel.setText("Close")
+            self.cancel.setEnabled(True)
+
+    def read_output(self):
+        if not self.process:
+            return
+        text = bytes(self.process.readAllStandardOutput()).decode("utf-8", "replace")
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            if line.startswith("STEP "):
+                line = line[5:]
+                self.status.setText(line)
+            elif line.startswith("ERROR "):
+                line = "Error: " + line[6:]
+                self.status.setText(line)
+            elif line.startswith("DONE"):
+                self.status.setText("Package installed.")
+            self.log.addItem(line)
+            self.log.scrollToBottom()
+
+    def finished(self, exit_code, _status):
+        self.progress.hide()
+        self.install.hide()
+        self.cancel.setEnabled(True)
+        self.cancel.setText("Done")
+        self.cancel.clicked.disconnect()
+        self.cancel.clicked.connect(self.accept)
+        if exit_code == 0:
+            self.status.hide()
+            self.log.hide()
+            self.done_panel.show()
+            self.cancel.setObjectName("PrimaryButton")
+            self.cancel.style().unpolish(self.cancel)
+            self.cancel.style().polish(self.cancel)
+        else:
+            self.status.setText("The package could not be installed after automatic repair attempts.")
+
+
+def main():
+    if len(sys.argv) < 2:
+        return 2
+    deb = Path(sys.argv[1]).expanduser()
+    if deb.suffix != ".deb" or not deb.is_file():
+        app = QApplication(sys.argv)
+        dialog = QDialog()
+        dialog.setWindowTitle("Install Debian Package")
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(QLabel("Choose a readable .deb package."))
+        close = QPushButton("Close")
+        close.clicked.connect(dialog.accept)
+        layout.addWidget(close)
+        dialog.exec()
+        return 2
+    app = QApplication(sys.argv)
+    dialog = DebInstaller(deb)
+    return dialog.exec()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

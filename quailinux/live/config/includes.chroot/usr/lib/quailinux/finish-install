@@ -48,6 +48,7 @@ rm -f \
 
 chmod 0755 /usr/bin/quailinux-welcome 2>/dev/null || true
 chmod 0755 /usr/lib/quailinux/welcome-install 2>/dev/null || true
+chmod 0755 /usr/lib/quailinux/install-deb-helper 2>/dev/null || true
 chmod 0755 /usr/bin/quailinux-install-deb 2>/dev/null || true
 chmod 0755 /usr/bin/neofetch 2>/dev/null || true
 chmod 0644 /usr/share/applications/quailinux-welcome.desktop 2>/dev/null || true
@@ -55,6 +56,7 @@ chmod 0644 /etc/xdg/autostart/quailinux-welcome.desktop 2>/dev/null || true
 chmod 0644 /etc/xdg/autostart/org.kde.plasma-welcome.desktop 2>/dev/null || true
 chmod 0644 /etc/xdg/autostart/plasma-welcome.desktop 2>/dev/null || true
 chmod 0644 /usr/share/polkit-1/rules.d/50-quailinux-welcome-install.rules 2>/dev/null || true
+chmod 0644 /usr/share/polkit-1/rules.d/51-quailinux-deb-install.rules 2>/dev/null || true
 
 if command -v systemctl >/dev/null 2>&1; then
     systemctl enable sddm.service >/dev/null 2>&1 || true

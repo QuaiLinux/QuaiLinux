@@ -1,0 +1,89 @@
+#!/bin/sh
+set -u
+
+export DEBIAN_FRONTEND=noninteractive
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo "ERROR This installer helper must run as root."
+    exit 1
+fi
+
+if [ "$#" -ne 1 ]; then
+    echo "ERROR Choose one .deb package."
+    exit 2
+fi
+
+deb=$1
+case "$deb" in
+    *.deb) ;;
+    *)
+        echo "ERROR Not a .deb package: $deb"
+        exit 2
+        ;;
+esac
+
+if [ ! -r "$deb" ]; then
+    echo "ERROR Cannot read package: $deb"
+    exit 1
+fi
+
+deb=$(readlink -f "$deb")
+
+repair_system() {
+    echo "STEP Repairing package state"
+    dpkg --configure -a || true
+    apt-get -f install -y || true
+    dpkg --configure -a || true
+}
+
+try_dpkg() {
+    echo "STEP Installing with dpkg"
+    dpkg -i "$deb"
+}
+
+try_apt_file() {
+    echo "STEP Installing with apt"
+    apt-get install -y "$deb"
+}
+
+echo "STEP Reading package"
+if ! dpkg-deb --field "$deb" Package >/dev/null 2>&1; then
+    echo "ERROR The file is not a valid Debian package."
+    exit 1
+fi
+
+echo "STEP Updating package lists"
+apt-get update -y || true
+
+if try_apt_file; then
+    repair_system
+    echo "DONE"
+    exit 0
+fi
+
+repair_system
+
+if try_dpkg; then
+    repair_system
+    echo "DONE"
+    exit 0
+fi
+
+repair_system
+
+if try_apt_file; then
+    repair_system
+    echo "DONE"
+    exit 0
+fi
+
+repair_system
+
+if dpkg -i "$deb"; then
+    repair_system
+    echo "DONE"
+    exit 0
+fi
+
+echo "ERROR Automatic repair attempts finished, but this package still cannot be installed."
+exit 1

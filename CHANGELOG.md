@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.1.25 - 2026-06-05
+
+### Changed
+
+- Tightened the QuaiLinux Welcome category grid spacing and centered the bottom
+  row.
+- Made the Welcome install log auto-scroll to the newest message while
+  packages install.
+- Replaced the completed Welcome install view with a large green completion
+  mark, completion message, and larger Done button.
+- Replaced the terminal-backed `.deb` installer with a compact PyQt
+  confirmation/progress dialog.
+- Added a dedicated `.deb` install helper that tries apt install, dpkg install,
+  dependency repair with `apt-get -f install`, and `dpkg --configure -a`
+  recovery passes automatically.
+- Added a narrowly scoped polkit rule so active sudo users can run the
+  QuaiLinux `.deb` install helper without a password prompt.
+
+### Verification
+
+- Ran Python syntax checks for the Welcome and `.deb` installer GUIs.
+- Ran shell syntax checks for the `.deb` helper, branding hook, and
+  finish-install hook.
+- Launched both PyQt GUIs in the Debian ARM64 build chroot with Qt's offscreen
+  platform to catch runtime construction errors.
+- Rebuilt the ARM64 ISO and verified the local/VM ISO SHA256 hashes match.
+
 ## 0.1.24 - 2026-06-05
 
 ### Changed

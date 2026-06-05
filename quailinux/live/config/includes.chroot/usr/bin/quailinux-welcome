@@ -427,9 +427,29 @@ class ProgressPage(QWidget):
         self.log.setObjectName("InstallLog")
         outer.addWidget(self.log, 1)
 
+        self.complete = QWidget()
+        complete_layout = QVBoxLayout(self.complete)
+        complete_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        complete_layout.setSpacing(18)
+        tick = QLabel("&#10003;")
+        tick.setObjectName("CompleteTick")
+        tick.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        tick.setTextFormat(Qt.TextFormat.RichText)
+        message = QLabel("Everything selected has finished installing.")
+        message.setObjectName("CompleteMessage")
+        message.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        message.setWordWrap(True)
+        complete_layout.addStretch()
+        complete_layout.addWidget(tick)
+        complete_layout.addWidget(message)
+        complete_layout.addStretch()
+        self.complete.hide()
+        outer.addWidget(self.complete, 1)
+
         bottom = QHBoxLayout()
         self.close_button = QPushButton("Done")
         self.close_button.setEnabled(False)
+        self.close_button.setObjectName("DoneButton")
         self.close_button.clicked.connect(go_home)
         bottom.addStretch()
         bottom.addWidget(self.close_button)
@@ -446,8 +466,13 @@ class ProgressPage(QWidget):
         self.status.setText("Starting package installation...")
         self.title.setText(title)
         self.log.clear()
+        self.status.show()
+        self.progress.show()
+        self.log.show()
+        self.complete.hide()
         self.back.setEnabled(False)
         self.close_button.setEnabled(False)
+        self.close_button.setText("Done")
 
         self.process = QProcess(self)
         self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
@@ -474,34 +499,43 @@ class ProgressPage(QWidget):
         if line.startswith("STEP "):
             self.status.setText(line[5:])
             self.log.addItem(line[5:])
+            self.log.scrollToBottom()
             return
         if line.startswith("DONE "):
             self.completed += 1
             self.progress.setValue(min(100, int((self.completed / max(1, self.total)) * 100)))
             self.log.addItem("Installed: " + line[5:])
+            self.log.scrollToBottom()
             return
         if line.startswith("SKIP "):
             self.completed += 1
             self.progress.setValue(min(100, int((self.completed / max(1, self.total)) * 100)))
             self.log.addItem("Skipped: " + line[5:])
+            self.log.scrollToBottom()
             return
         if line.startswith("ERROR "):
             self.completed += 1
             self.progress.setValue(min(100, int((self.completed / max(1, self.total)) * 100)))
             self.log.addItem("Failed: " + line[6:])
+            self.log.scrollToBottom()
             return
         if line.startswith("FINISHED"):
             self.progress.setValue(100)
             self.status.setText("Finished installing selected packages.")
             return
         self.log.addItem(line)
+        self.log.scrollToBottom()
 
     def finished(self, exit_code, _status):
         self.back.setEnabled(True)
         self.close_button.setEnabled(True)
         if exit_code == 0:
             self.progress.setValue(100)
-            self.status.setText("Finished installing selected packages.")
+            self.status.hide()
+            self.progress.hide()
+            self.log.hide()
+            self.complete.show()
+            self.close_button.setText("Done")
         else:
             self.status.setText("Package installation stopped before finishing.")
 
@@ -531,19 +565,27 @@ class Welcome(QDialog):
         root.addWidget(self.stack, 1)
 
         home = QWidget()
-        grid = QGridLayout(home)
-        grid.setContentsMargins(0, 8, 0, 0)
-        grid.setHorizontalSpacing(26)
-        grid.setVerticalSpacing(22)
+        home_layout = QVBoxLayout(home)
+        home_layout.setContentsMargins(0, 4, 0, 0)
+        home_layout.setSpacing(18)
+        home_layout.addStretch()
+        top_row = QHBoxLayout()
+        top_row.setSpacing(22)
+        top_row.addStretch()
+        bottom_row = QHBoxLayout()
+        bottom_row.setSpacing(22)
+        bottom_row.addStretch()
         for index, key in enumerate(CATEGORIES):
-            row = 0 if index < 3 else 1
-            column = index if index < 3 else index - 3
             card = CategoryCard(key, CATEGORIES[key], self.open_category)
-            grid.addWidget(card, row, column, alignment=Qt.AlignmentFlag.AlignCenter)
-        for column in range(3):
-            grid.setColumnStretch(column, 1)
-        for row in range(2):
-            grid.setRowStretch(row, 1)
+            if index < 3:
+                top_row.addWidget(card)
+            else:
+                bottom_row.addWidget(card)
+        top_row.addStretch()
+        bottom_row.addStretch()
+        home_layout.addLayout(top_row)
+        home_layout.addLayout(bottom_row)
+        home_layout.addStretch()
         self.stack.addWidget(home)
 
         self.pages = {}
@@ -575,6 +617,15 @@ class Welcome(QDialog):
             QLabel#MergeLabel {
                 font-size: 14px;
             }
+            QLabel#CompleteTick {
+                color: #42d392;
+                font-size: 86px;
+                font-weight: 700;
+            }
+            QLabel#CompleteMessage {
+                font-size: 22px;
+                font-weight: 700;
+            }
             QFrame#CategoryCard {
                 border: 1px solid palette(midlight);
                 border-radius: 8px;
@@ -598,6 +649,12 @@ class Welcome(QDialog):
             }
             QPushButton#PrimaryButton {
                 font-weight: 700;
+            }
+            QPushButton#DoneButton {
+                font-size: 18px;
+                font-weight: 700;
+                min-width: 150px;
+                min-height: 48px;
             }
         """)
 
