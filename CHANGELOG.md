@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.1.21 - 2026-06-05
+
+### Fixed
+
+- Restored executable file modes on the KPMCore helper wrapper files
+  `org.kde.kpmcore.helperinterface`, preventing DBus/KAuth from failing with
+  permission errors and causing Calamares to show no installable drives.
+
+### Verification
+
+- Rebuilt the ARM64 ISO and verified the compressed filesystem contains
+  executable, root-owned KPMCore helper wrapper files at `/usr/bin` and
+  `/usr/lib/aarch64-linux-gnu/libexec`.
+- Verified the KPMCore DBus service still points to
+  `/usr/bin/org.kde.kpmcore.helperinterface`, so DBus/KAuth can start the
+  helper Calamares needs for partition detection.
+- Verified the Calamares finish-install job is still present, the ISO volume ID
+  is `QUAILINUX_LIVE`, UEFI El Torito boot metadata is present, and the black
+  GRUB menu still shows `Try or Install QuaiLinux` with the safe graphics
+  option below it.
+
 ## 0.1.20 - 2026-06-05
 
 ### Fixed
