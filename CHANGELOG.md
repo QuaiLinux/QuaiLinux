@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.1.19 - 2026-06-05
+
+### Fixed
+
+- Added explicit QuaiLinux `os-release` files to the live overlay so system
+  identity no longer falls back to Debian branding if hooks are skipped during
+  an incremental rebuild.
+- Added a Calamares final shellprocess job that converts the copied live
+  filesystem into an installed QuaiLinux system by rewriting OS identity,
+  removing `/etc/debian_chroot`, removing live-session config, and removing
+  installer launchers from the target system.
+- Changed the fastfetch/neofetch ASCII text so it no longer says `live`.
+- Fixed the tracked executable mode for `quailinux-welcome` and added an
+  install-time chmod fallback so KDE can launch the Welcome app after install.
+
+### Verification
+
+- Ran shell syntax checks for the install cleanup script and branding hook.
+- Parsed the Calamares settings and finish-install module YAML.
+- Rebuilt the ARM64 ISO and verified the compressed filesystem contains
+  QuaiLinux `os-release`, executable `quailinux-welcome`, the Calamares
+  finish-install job, cleaned ASCII art text, live runtime mount directories,
+  and no macOS resource-fork files or local uid/gid ownership.
+- Verified the ISO volume ID is `QUAILINUX_LIVE`, UEFI El Torito boot metadata
+  is present, the black GRUB menu still shows the requested entries, and the
+  VM/local ISO SHA256 hashes match.
+
 ## 0.1.18 - 2026-06-04
 
 ### Fixed

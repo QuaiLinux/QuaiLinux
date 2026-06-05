@@ -1,0 +1,10 @@
+PRETTY_NAME="QuaiLinux 0.1"
+NAME="QuaiLinux"
+VERSION_ID="0.1"
+VERSION="0.1 (Trixie)"
+VERSION_CODENAME=trixie
+ID=quailinux
+ID_LIKE=debian
+HOME_URL="https://quailinux.local/"
+SUPPORT_URL="https://quailinux.local/support"
+BUG_REPORT_URL="https://quailinux.local/issues"

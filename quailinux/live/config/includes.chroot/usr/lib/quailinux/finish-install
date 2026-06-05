@@ -1,0 +1,57 @@
+#!/bin/sh
+set -eu
+
+cat > /usr/lib/os-release <<'EOF'
+PRETTY_NAME="QuaiLinux 0.1"
+NAME="QuaiLinux"
+VERSION_ID="0.1"
+VERSION="0.1 (Trixie)"
+VERSION_CODENAME=trixie
+ID=quailinux
+ID_LIKE=debian
+HOME_URL="https://quailinux.local/"
+SUPPORT_URL="https://quailinux.local/support"
+BUG_REPORT_URL="https://quailinux.local/issues"
+EOF
+
+ln -sf ../usr/lib/os-release /etc/os-release
+printf '13.5\n' > /etc/debian_version
+printf 'quailinux\n' > /etc/hostname
+
+cat > /etc/issue <<'EOF'
+QuaiLinux 0.1 \n \l
+EOF
+
+cat > /etc/issue.net <<'EOF'
+QuaiLinux 0.1
+EOF
+
+cat > /etc/motd <<'EOF'
+Welcome to QuaiLinux.
+EOF
+
+rm -f /etc/debian_chroot
+rm -rf /etc/live /var/lib/live
+
+rm -f \
+    /etc/profile.d/quailinux-live-installer.sh \
+    /etc/sudoers.d/quailinux-live \
+    /etc/systemd/system/multi-user.target.wants/quailinux-live-permissions.service \
+    /etc/systemd/system/quailinux-live-permissions.service \
+    /etc/xdg/autostart/calamares-desktop-icon.desktop \
+    /etc/xdg/autostart/quailinux-clean-live-desktop.desktop \
+    /usr/share/applications/calamares.desktop \
+    /usr/share/applications/calamares-install-debian.desktop \
+    /usr/share/applications/install-debian.desktop \
+    /usr/share/applications/debian-installer.desktop \
+    /usr/share/applications/quailinux-installer.desktop
+
+chmod 0755 /usr/bin/quailinux-welcome 2>/dev/null || true
+chmod 0755 /usr/bin/quailinux-install-deb 2>/dev/null || true
+chmod 0755 /usr/bin/neofetch 2>/dev/null || true
+chmod 0644 /usr/share/applications/quailinux-welcome.desktop 2>/dev/null || true
+chmod 0644 /etc/xdg/autostart/quailinux-welcome.desktop 2>/dev/null || true
+
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl enable sddm.service >/dev/null 2>&1 || true
+fi
