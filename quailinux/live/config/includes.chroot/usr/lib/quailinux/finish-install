@@ -59,3 +59,11 @@ chmod 0644 /usr/share/polkit-1/rules.d/50-quailinux-welcome-install.rules 2>/dev
 if command -v systemctl >/dev/null 2>&1; then
     systemctl enable sddm.service >/dev/null 2>&1 || true
 fi
+
+if command -v update-initramfs >/dev/null 2>&1; then
+    update-initramfs -u -k all >/dev/null 2>&1 || true
+fi
+
+if command -v update-grub >/dev/null 2>&1; then
+    update-grub >/dev/null 2>&1 || true
+fi

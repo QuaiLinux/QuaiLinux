@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.1.23 - 2026-06-05
+
+### Fixed
+
+- Fixed installed ARM64 systems booting to a GRUB menu with only "UEFI
+  Firmware Settings" by ensuring the installed target keeps a kernel/initramfs
+  in `/boot` before GRUB is generated.
+- Moved the QuaiLinux finish-install step before Calamares' bootloader step so
+  the target identity and boot files are settled before GRUB installation.
+- Added explicit `linux-image-arm64` and `initramfs-tools` package operations
+  for ARM64 live installs.
+- Added finish-install refreshes for initramfs and GRUB configuration when the
+  target system provides those tools.
+
+### Verification
+
+- Ran shell syntax checks for the finish-install hook.
+- Parsed the Calamares settings and package module YAML.
+- Rebuilt the ARM64 ISO and verified the SquashFS contains
+  `/boot/vmlinuz-6.12.90+deb13.1-arm64` and
+  `/boot/initrd.img-6.12.90+deb13.1-arm64`.
+- Verified the rebuilt ISO volume ID is `QUAILINUX_LIVE`, UEFI El Torito boot
+  metadata is present, and the local/VM ISO SHA256 hashes match.
+
 ## 0.1.22 - 2026-06-05
 
 ### Changed
