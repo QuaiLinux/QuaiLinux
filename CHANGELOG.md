@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.29 - 2026-06-06
+
+### Changed
+
+- Improved QuaiLinux Driver Manager contrast so secondary text no longer
+  appears as grey-on-grey in the default dark Plasma session.
+- Added status badges to Driver Manager hardware suggestions so users can see
+  whether a driver setup is recommended, partly installed, or already
+  installed.
+- Replaced the Driver Manager no-results message with a cleaner empty state.
+- Switched the Calamares branding window mode to fullscreen so the live
+  installer takes over the screen and hides the Plasma panel while setup runs.
+
+### Verification
+
+- Ran Python syntax checks for the Driver Manager GUI.
+- Parsed the Calamares branding YAML.
+- Launched the Driver Manager in the Debian ARM64 build chroot with Qt's
+  offscreen platform to catch runtime construction errors.
+
 ## 0.1.28 - 2026-06-05
 
 ### Added

@@ -2,9 +2,8 @@
 componentName: quailinux
 welcomeStyleCalamares: true
 welcomeExpandingLogo: true
-windowExpanding: normal
-windowSize: 800px,580px
-windowPlacement: center
+windowExpanding: fullscreen
+windowPlacement: free
 
 strings:
     productName:         QuaiLinux

@@ -8,7 +8,6 @@ from PyQt6.QtCore import QProcess, Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
     QApplication,
-    QCheckBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -116,6 +115,20 @@ def run_text(command):
         return ""
 
 
+def package_installed(package):
+    try:
+        result = subprocess.run(
+            ["dpkg-query", "-W", "-f=${Status}", package],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=4,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0 and result.stdout.strip() == "install ok installed"
+
+
 def read_text(path):
     try:
         return Path(path).read_text(errors="replace")
@@ -150,6 +163,15 @@ def scan_matches():
     return matches
 
 
+def status_for_packages(packages):
+    installed = sum(1 for package in packages if package_installed(package))
+    if installed == len(packages) and packages:
+        return "Installed", "installed"
+    if installed:
+        return "Partial", "partial"
+    return "Recommended", "recommended"
+
+
 class DriverCard(QFrame):
     def __init__(self, match):
         super().__init__()
@@ -158,9 +180,19 @@ class DriverCard(QFrame):
         layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(6)
 
+        status_text, status_kind = status_for_packages(match["packages"])
+        top = QHBoxLayout()
+        top.setSpacing(10)
         title = QLabel(match["name"])
         title.setObjectName("CardTitle")
-        layout.addWidget(title)
+        top.addWidget(title, 1)
+
+        badge = QLabel(status_text)
+        badge.setObjectName("StatusBadge")
+        badge.setProperty("kind", status_kind)
+        badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        top.addWidget(badge)
+        layout.addLayout(top)
 
         reason = QLabel(match["reason"])
         reason.setObjectName("CardReason")
@@ -198,12 +230,35 @@ class DriverManager(QMainWindow):
         layout.addLayout(header)
 
         self.summary = QLabel("Scan your computer for hardware that may need extra drivers or firmware.")
+        self.summary.setObjectName("SummaryText")
         self.summary.setWordWrap(True)
         layout.addWidget(self.summary)
 
         self.list = QListWidget()
         self.list.setObjectName("DriverList")
         layout.addWidget(self.list, 1)
+
+        self.empty_state = QFrame()
+        self.empty_state.setObjectName("EmptyState")
+        empty_layout = QVBoxLayout(self.empty_state)
+        empty_layout.setContentsMargins(28, 28, 28, 28)
+        empty_layout.setSpacing(10)
+        empty_layout.addStretch()
+
+        empty_title = QLabel("All set")
+        empty_title.setObjectName("EmptyTitle")
+        empty_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_layout.addWidget(empty_title)
+
+        empty_message = QLabel("No missing driver setup was detected. Your hardware already looks ready.")
+        empty_message.setObjectName("EmptyMessage")
+        empty_message.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_message.setWordWrap(True)
+        empty_layout.addWidget(empty_message)
+
+        empty_layout.addStretch()
+        self.empty_state.hide()
+        layout.addWidget(self.empty_state, 1)
 
         self.progress = QProgressBar()
         self.progress.setRange(0, 0)
@@ -226,31 +281,75 @@ class DriverManager(QMainWindow):
 
         self.setStyleSheet("""
             QMainWindow {
-                background: palette(window);
+                background: #1f2328;
+                color: #eef2f6;
             }
             QLabel#HeroTitle {
                 font-size: 28px;
                 font-weight: 700;
+                color: #ffffff;
+            }
+            QLabel#SummaryText {
+                color: #d9e0e8;
             }
             QLabel#CardTitle {
                 font-size: 17px;
                 font-weight: 700;
+                color: #f4f7fb;
             }
             QLabel#CardReason,
             QLabel#PackageText {
-                color: palette(mid);
+                color: #c2cbd6;
+            }
+            QLabel#PackageText {
+                color: #aeb8c4;
+            }
+            QLabel#StatusBadge {
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                min-height: 20px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            QLabel#StatusBadge[kind="recommended"] {
+                background: #17446b;
+                color: #d7ecff;
+            }
+            QLabel#StatusBadge[kind="partial"] {
+                background: #665119;
+                color: #fff0b8;
+            }
+            QLabel#StatusBadge[kind="installed"] {
+                background: #1d5b3b;
+                color: #d8ffe8;
             }
             QFrame#DriverCard {
-                border: 1px solid palette(midlight);
+                border: 1px solid #3b4652;
                 border-radius: 8px;
-                background: palette(base);
+                background: #12161b;
             }
             QListWidget#DriverList,
             QListWidget#InstallLog {
-                border: 1px solid palette(midlight);
+                border: 1px solid #3b4652;
                 border-radius: 8px;
-                background: palette(base);
+                background: #0f1318;
+                color: #eef2f6;
                 padding: 8px;
+            }
+            QFrame#EmptyState {
+                border: 1px solid #3b4652;
+                border-radius: 8px;
+                background: #12161b;
+            }
+            QLabel#EmptyTitle {
+                font-size: 30px;
+                font-weight: 800;
+                color: #ffffff;
+            }
+            QLabel#EmptyMessage {
+                font-size: 15px;
+                color: #c2cbd6;
             }
             QPushButton {
                 min-height: 34px;
@@ -269,9 +368,13 @@ class DriverManager(QMainWindow):
         self.log.hide()
         self.progress.hide()
         if not self.matches:
-            self.summary.setText("No obvious missing driver setup was detected. Your hardware already looks ready.")
+            self.summary.setText("Driver scan complete.")
+            self.list.hide()
+            self.empty_state.show()
             self.install_button.setEnabled(False)
             return
+        self.empty_state.hide()
+        self.list.show()
         self.summary.setText(f"Found {len(self.matches)} driver setup suggestion(s). Review them, then set them up automatically.")
         for match in self.matches:
             item = QListWidgetItem()
