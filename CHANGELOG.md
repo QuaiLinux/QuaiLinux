@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.30 - 2026-06-06
+
+### Changed
+
+- Added expandable Driver Manager details for each recommendation, including
+  detected device data, current kernel driver when reported, already installed
+  packages, and packages still planned for installation.
+- Made the double-click `.deb` installer confirmation dialog much shorter
+  vertically while keeping the larger progress/log view during installation.
+
+### Verification
+
+- Ran Python syntax checks for the Driver Manager and `.deb` installer GUIs.
+- Launched both PyQt GUIs in the Debian ARM64 build chroot with Qt's offscreen
+  platform to catch runtime construction errors.
+
 ## 0.1.29 - 2026-06-06
 
 ### Changed

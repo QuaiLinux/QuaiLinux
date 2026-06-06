@@ -147,6 +147,46 @@ def hardware_text():
     return "\n".join(parts)
 
 
+def matching_device_blocks(text, patterns):
+    sections = []
+    current = []
+    for line in text.splitlines():
+        starts_device = (
+            re.match(r"^[0-9a-fA-F:.]+\\s", line) or
+            line.startswith("Bus ")
+        )
+        if starts_device and current:
+            sections.append("\n".join(current))
+            current = []
+        current.append(line)
+    if current:
+        sections.append("\n".join(current))
+
+    blocks = []
+    for block in sections:
+        if any(re.search(pattern, block, re.IGNORECASE) for pattern in patterns):
+            cleaned = []
+            for line in block.splitlines():
+                line = line.strip()
+                if line:
+                    cleaned.append(line)
+            if cleaned:
+                blocks.append(cleaned)
+    return blocks
+
+
+def kernel_drivers(blocks):
+    drivers = []
+    for block in blocks:
+        for line in block:
+            match = re.search(r"Kernel driver in use:\s*(.+)", line, re.IGNORECASE)
+            if match:
+                driver = match.group(1).strip()
+                if driver not in drivers:
+                    drivers.append(driver)
+    return drivers
+
+
 def scan_matches():
     text = hardware_text()
     lower = text.lower()
@@ -154,20 +194,37 @@ def scan_matches():
     seen = set()
     for rule in RULES:
         if any(re.search(pattern, lower, re.IGNORECASE) for pattern in rule["patterns"]):
+            blocks = matching_device_blocks(text, rule["patterns"])
             packages = []
             for package in rule["packages"]:
                 if package not in seen:
                     packages.append(package)
                     seen.add(package)
-            matches.append({**rule, "packages": packages})
+            matches.append({
+                **rule,
+                "packages": packages,
+                "devices": blocks[:3],
+                "drivers": kernel_drivers(blocks),
+            })
     return matches
 
 
+def package_state(packages):
+    installed = []
+    missing = []
+    for package in packages:
+        if package_installed(package):
+            installed.append(package)
+        else:
+            missing.append(package)
+    return installed, missing
+
+
 def status_for_packages(packages):
-    installed = sum(1 for package in packages if package_installed(package))
-    if installed == len(packages) and packages:
+    installed, missing = package_state(packages)
+    if installed and not missing:
         return "Installed", "installed"
-    if installed:
+    if installed and missing:
         return "Partial", "partial"
     return "Recommended", "recommended"
 
@@ -175,6 +232,9 @@ def status_for_packages(packages):
 class DriverCard(QFrame):
     def __init__(self, match):
         super().__init__()
+        self.match = match
+        self.item = None
+        self.list_widget = None
         self.setObjectName("DriverCard")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 12, 14, 12)
@@ -203,6 +263,52 @@ class DriverCard(QFrame):
         packages.setObjectName("PackageText")
         packages.setWordWrap(True)
         layout.addWidget(packages)
+
+        self.details = QFrame()
+        self.details.setObjectName("DetailsPanel")
+        details_layout = QVBoxLayout(self.details)
+        details_layout.setContentsMargins(10, 10, 10, 10)
+        details_layout.setSpacing(6)
+
+        installed, missing = package_state(match["packages"])
+        detail_lines = []
+        if match["drivers"]:
+            detail_lines.append("Current kernel driver: " + ", ".join(match["drivers"]))
+        else:
+            detail_lines.append("Current kernel driver: not reported")
+        if installed:
+            detail_lines.append("Already installed: " + ", ".join(installed))
+        if missing:
+            detail_lines.append("Will install: " + ", ".join(missing))
+
+        if match["devices"]:
+            detail_lines.append("")
+            detail_lines.append("Detected device:")
+            for line in match["devices"][0][:5]:
+                detail_lines.append(line)
+        else:
+            detail_lines.append("Detected device: matched from system hardware data")
+
+        details_text = QLabel("\n".join(detail_lines))
+        details_text.setObjectName("DetailsText")
+        details_text.setWordWrap(True)
+        details_layout.addWidget(details_text)
+        self.details.hide()
+        layout.addWidget(self.details)
+
+        self.details_button = QPushButton("Details")
+        self.details_button.setObjectName("DetailsButton")
+        self.details_button.clicked.connect(self.toggle_details)
+        layout.addWidget(self.details_button, alignment=Qt.AlignmentFlag.AlignRight)
+
+    def toggle_details(self):
+        show = not self.details.isVisible()
+        self.details.setVisible(show)
+        self.details_button.setText("Hide details" if show else "Details")
+        if self.item:
+            self.item.setSizeHint(self.sizeHint())
+        if self.list_widget:
+            self.list_widget.doItemsLayout()
 
 
 class DriverManager(QMainWindow):
@@ -304,6 +410,11 @@ class DriverManager(QMainWindow):
             QLabel#PackageText {
                 color: #aeb8c4;
             }
+            QLabel#DetailsText {
+                color: #d3dbe5;
+                font-family: monospace;
+                font-size: 12px;
+            }
             QLabel#StatusBadge {
                 border-radius: 10px;
                 font-size: 12px;
@@ -342,6 +453,11 @@ class DriverManager(QMainWindow):
                 border-radius: 8px;
                 background: #12161b;
             }
+            QFrame#DetailsPanel {
+                border: 1px solid #2f3a45;
+                border-radius: 6px;
+                background: #1a2027;
+            }
             QLabel#EmptyTitle {
                 font-size: 30px;
                 font-weight: 800;
@@ -358,6 +474,10 @@ class DriverManager(QMainWindow):
             }
             QPushButton#PrimaryButton {
                 font-weight: 700;
+            }
+            QPushButton#DetailsButton {
+                min-height: 28px;
+                font-size: 12px;
             }
         """)
         self.scan()
@@ -379,6 +499,8 @@ class DriverManager(QMainWindow):
         for match in self.matches:
             item = QListWidgetItem()
             card = DriverCard(match)
+            card.item = item
+            card.list_widget = self.list
             item.setSizeHint(card.sizeHint())
             self.list.addItem(item)
             self.list.setItemWidget(item, card)

@@ -26,11 +26,11 @@ class DebInstaller(QDialog):
         self.process = None
         self.setWindowTitle("Install Debian Package")
         self.setWindowIcon(QIcon("package-install"))
-        self.setFixedSize(460, 210)
+        self.setFixedSize(440, 132)
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(18, 14, 18, 14)
-        root.setSpacing(10)
+        root.setContentsMargins(14, 10, 14, 10)
+        root.setSpacing(6)
 
         self.title = QLabel(f"Install {self.deb_path.name}?")
         self.title.setObjectName("Title")
@@ -78,7 +78,7 @@ class DebInstaller(QDialog):
                 background: palette(window);
             }
             QLabel#Title {
-                font-size: 18px;
+                font-size: 16px;
                 font-weight: 700;
             }
             QLabel#Status {
@@ -96,10 +96,10 @@ class DebInstaller(QDialog):
                 padding: 6px;
             }
             QPushButton {
-                min-height: 34px;
-                min-width: 92px;
-                padding-left: 14px;
-                padding-right: 14px;
+                min-height: 30px;
+                min-width: 86px;
+                padding-left: 12px;
+                padding-right: 12px;
             }
             QPushButton#PrimaryButton {
                 font-weight: 700;
@@ -110,6 +110,7 @@ class DebInstaller(QDialog):
         self.cancel.setEnabled(False)
         self.install.setEnabled(False)
         self.title.setText(f"Installing {self.deb_path.name}")
+        self.setFixedSize(500, 300)
         self.status.setText("Preparing...")
         self.status.show()
         self.progress.show()
@@ -152,6 +153,7 @@ class DebInstaller(QDialog):
         self.cancel.clicked.disconnect()
         self.cancel.clicked.connect(self.accept)
         if exit_code == 0:
+            self.setFixedSize(420, 150)
             self.status.hide()
             self.log.hide()
             self.done_panel.show()
