@@ -3,6 +3,28 @@ set -eu
 
 printf 'QuaiLinux\n' > /etc/hostname
 
+arch="$(dpkg --print-architecture 2>/dev/null || echo unknown)"
+case "$arch" in
+    amd64)
+        linux_image=linux-image-amd64
+        grub_efi=grub-efi-amd64
+        grub_efi_bin=grub-efi-amd64-bin
+        multiarch=x86_64-linux-gnu
+        ;;
+    arm64)
+        linux_image=linux-image-arm64
+        grub_efi=grub-efi-arm64
+        grub_efi_bin=grub-efi-arm64-bin
+        multiarch=aarch64-linux-gnu
+        ;;
+    *)
+        linux_image=linux-image-amd64
+        grub_efi=grub-efi-amd64
+        grub_efi_bin=grub-efi-amd64-bin
+        multiarch=x86_64-linux-gnu
+        ;;
+esac
+
 cat > /etc/quailinux-release <<'EOF'
 QuaiLinux live image based on Debian
 EOF
@@ -50,7 +72,7 @@ for file in \
     /usr/lib/quailinux/install-deb-helper \
     /usr/lib/quailinux/driver-manager-helper \
     /usr/lib/quailinux/clean-live-desktop \
-    /usr/lib/aarch64-linux-gnu/libexec/org.kde.kpmcore.helperinterface
+    "/usr/lib/$multiarch/libexec/org.kde.kpmcore.helperinterface"
 do
     [ -f "$file" ] || continue
     chmod +x "$file"
@@ -141,6 +163,32 @@ EOF
 
 if [ -f /etc/calamares/settings.conf ]; then
     sed -i 's/^branding:.*/branding: quailinux/' /etc/calamares/settings.conf
+    sed -i -E "s#/usr/lib/[^/]+-linux-gnu/calamares/modules#/usr/lib/$multiarch/calamares/modules#g" /etc/calamares/settings.conf
+fi
+
+if [ -f /etc/calamares/modules/packages.conf ]; then
+    sed -i -E \
+        -e "s/linux-image-(amd64|arm64)/$linux_image/g" \
+        -e "s/grub-efi-(amd64|arm64)-bin/$grub_efi_bin/g" \
+        -e "s/grub-efi-(amd64|arm64)/$grub_efi/g" \
+        /etc/calamares/modules/packages.conf
+fi
+
+if [ -x "/usr/lib/$multiarch/libexec/kpmcore_externalcommand" ]; then
+    cat > /usr/bin/org.kde.kpmcore.helperinterface <<EOF
+#!/bin/sh
+exec /usr/lib/$multiarch/libexec/kpmcore_externalcommand "\$@"
+EOF
+    chmod 0755 /usr/bin/org.kde.kpmcore.helperinterface
+    chown root:root /usr/bin/org.kde.kpmcore.helperinterface
+
+    install -d "/usr/lib/$multiarch/libexec"
+    cat > "/usr/lib/$multiarch/libexec/org.kde.kpmcore.helperinterface" <<EOF
+#!/bin/sh
+exec /usr/lib/$multiarch/libexec/kpmcore_externalcommand "\$@"
+EOF
+    chmod 0755 "/usr/lib/$multiarch/libexec/org.kde.kpmcore.helperinterface"
+    chown root:root "/usr/lib/$multiarch/libexec/org.kde.kpmcore.helperinterface"
 fi
 
 if [ -f /usr/share/quailinux/artwork/icon.png ]; then

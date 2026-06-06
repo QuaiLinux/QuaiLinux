@@ -19,6 +19,8 @@ do
     sed -i \
         -e 's/Live system (arm64)/Try or Install QuaiLinux/g' \
         -e 's/Live system (arm64 fail-safe mode)/Try or Install QuaiLinux (safe graphics)/g' \
+        -e 's/Live system (amd64)/Try or Install QuaiLinux/g' \
+        -e 's/Live system (amd64 fail-safe mode)/Try or Install QuaiLinux (safe graphics)/g' \
         -e 's/Start QuaiLinux Live (safe graphics)/Try or Install QuaiLinux (safe graphics)/g' \
         -e 's/Start QuaiLinux Live/Try or Install QuaiLinux/g' \
         -e 's/Advanced install options \.\.\./Advanced QuaiLinux install options .../g' \

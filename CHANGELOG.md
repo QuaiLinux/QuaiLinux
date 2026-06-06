@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.31 - 2026-06-06
+
+### Changed
+
+- Made the live-build profile choose AMD64 or ARM64 kernel and GRUB packages
+  from the requested build architecture instead of hard-coding ARM64 boot
+  packages in the shared package list.
+- Made the Calamares branding hook rewrite module paths, bootloader packages,
+  kernel packages, and KPMCore helper wrappers for the active architecture.
+- Extended live boot menu branding to catch AMD64 live-build menu labels.
+
+### Verification
+
+- Ran shell syntax checks for the build script and architecture-sensitive
+  hooks.
+- Parsed the Calamares settings and package module YAML.
+- Checked the updated tree for diff whitespace errors.
+
 ## 0.1.30 - 2026-06-06
 
 ### Changed

@@ -10,6 +10,31 @@ case "$arch" in
     *) echo "unsupported architecture: $arch" >&2; exit 1 ;;
 esac
 
+boot_packages=config/package-lists/quailinux-boot.list.chroot
+case "$arch" in
+    amd64)
+        kernel_package=linux-image-amd64
+        grub_package=grub-efi-amd64
+        grub_bin_package=grub-efi-amd64-bin
+        ;;
+    arm64)
+        kernel_package=linux-image-arm64
+        grub_package=grub-efi-arm64
+        grub_bin_package=grub-efi-arm64-bin
+        ;;
+esac
+
+cleanup() {
+    rm -f "$boot_packages"
+}
+trap cleanup EXIT INT TERM
+
+cat > "$boot_packages" <<EOF
+$kernel_package
+$grub_package
+$grub_bin_package
+EOF
+
 if ! command -v lb >/dev/null 2>&1; then
     echo "live-build is required. Build inside Debian and install it with: sudo apt install live-build" >&2
     exit 1

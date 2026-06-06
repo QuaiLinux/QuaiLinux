@@ -26,8 +26,6 @@ mesa-vulkan-drivers
 fastfetch
 python3-pyqt6
 gdebi
-grub-efi-arm64
-grub-efi-arm64-bin
 grub2-common
 efibootmgr
 shim-signed
